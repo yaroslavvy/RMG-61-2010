@@ -8,6 +8,7 @@ using std::endl;
 #include <clocale>
 #include <cstdlib>
 #include <cmath>
+#include <stdarg.h>
 #include <string>
 using std::string;
 #include <fstream>
@@ -29,6 +30,8 @@ DataTable * Service::newDataTable = NULL;
 struct sessions * Service::arrayOfSessions = NULL;
 //DataTable ** Service::sessionDataTablesArray = NULL;
 FourDimArray * Service::fourDimArrayPtr = NULL;
+FourDimArray * Service::fourDimArrayConcentrationsPtr = NULL;
+FourDimArray * Service::fourDimArrayUncertaintiesPtr = NULL;
 FourDimArray * Service::averagefourDimArrayPtr = NULL;
 
 
@@ -42,7 +45,7 @@ void Service::callMenu() {
 		cout << "3 - next row" << endl << "4 - print element" << endl << "5 - save in file " << endl << "6 - read from file" << endl;
 		cout << "7 - extract data from structure to table" << endl << "8 - extract data from table to structure" << endl;
 		cout << "9 - print table" << endl << "10 - create initial data tables for statistic calculation" << endl << "11 - delete data structure" << endl;
-		cout << "12 - identify concentrations" << endl << "13 - calculate average values" << endl << "14 - save the report" << endl;
+		cout << "12 - identify concentrations" << endl << "13 - calculate average values" << endl << "99 - save the report" << endl;
 		cout << "100 - exit" << endl << endl;
 		cin >> command;
 		cout << endl;
@@ -155,6 +158,9 @@ void Service::callMenu() {
 					cout << endl << "Reading from file has been canceled" << endl;
 					break;
 				}
+				arrayOfSessions->sessionDataTablesArray = NULL; // как то нужно очищать память от динамически выделенной памяти под массив указателей на объекты DataTable
+				arrayOfSessions->crmConcentraions = NULL; // как то нужно очищать память от динамически выделенной памяти под указатель на объект DataTable
+				arrayOfSessions->crmUncertainties = NULL; // как то нужно очищать память от динамически выделенной памяти под указатель на объект DataTable
 				cin.get();
 			}
 
@@ -171,14 +177,16 @@ void Service::callMenu() {
 			tmp = 1;
 			arrayOfSessions = NULL;
 			arrayOfSessions = new sessions;
-			arrayOfSessions->sessionDataTablesArray = NULL; // как то нужно очищать память от динамически выделенной памяти под массив указателей на объекты DataTable
+			arrayOfSessions->sessionDataTablesArray = NULL;
+			arrayOfSessions->crmConcentraions = NULL;
+			arrayOfSessions->crmUncertainties = NULL;
 			arrayOfSessions->amountOfSessions = intAnswerDialogMenu;
 			arrayOfSessions->sessionDataTablesArray = new DataTable *[intAnswerDialogMenu];
 
 			cin.get(); // разобрать с танцем с бубном в случае с cin потоком, почему иногда не читает первый символ
 			while (tmp <= intAnswerDialogMenu) {
 				do {
-					cout << endl << "Input name of file which include " << tmp << numberEnding(tmp) << " session data:" << endl;
+					cout << endl << "Input name of file which includes " << tmp << numberEnding(tmp) << " session data:" << endl;
 					getline(cin, fileName);
 					startPtr = NULL;
 				} while (List::readFromFile(&startPtr, fileName) == false);
@@ -188,12 +196,39 @@ void Service::callMenu() {
 				startPtr = NULL;
 				tmp++;
 			}
-			tmp = 1;
+			
+			do {
+				cout << endl << "Input name of file which includes concentrations of CRMs:" << endl;
+				getline(cin, fileName);
+				startPtr = NULL;
+			} while (List::readFromFile(&startPtr, fileName) == false);
+			arrayOfSessions->crmConcentraions = new DataTable((List::getMaxCommonColumn() - 1), (List::getCommonRow() - 2));
+			arrayOfSessions->crmConcentraions->extractConcentrationsFromFormattedStructureToTable(startPtr);
+			delete startPtr;
+			startPtr = NULL;
+
+			do {
+				cout << endl << "Input name of file which includes uncertainties of CRM's concentrations:" << endl;
+				getline(cin, fileName);
+				startPtr = NULL;
+			} while (List::readFromFile(&startPtr, fileName) == false);
+			arrayOfSessions->crmUncertainties = new DataTable((List::getMaxCommonColumn() - 1), (List::getCommonRow() - 2));
+			arrayOfSessions->crmUncertainties->extractConcentrationsFromFormattedStructureToTable(startPtr);
+			delete startPtr;
+			startPtr = NULL;
+
 			while (tmp <= intAnswerDialogMenu) {
 				cout << endl << tmp << numberEnding(tmp) << " session data:" << endl;
 				(*(arrayOfSessions->sessionDataTablesArray + tmp - 1))->printDataTable();
 				tmp++;
 			}
+
+			cout << endl << "Concentrations of CRMs:" << endl;
+			arrayOfSessions->crmConcentraions->printDataTable();
+
+			cout << endl << "Uncertainties of CRM's concentrations:" << endl;
+			arrayOfSessions->crmUncertainties->printDataTable();
+			
 			break;
 		case 11:
 			if (isPtrNull(startPtr)) {
@@ -206,6 +241,21 @@ void Service::callMenu() {
 		case 12:
 			fourDimArrayPtr = FourDimArray::extractDataFromTableToFourDimArray(arrayOfSessions);
 			fourDimArrayPtr->setDescription("Common formated data");
+
+			if (isPtrNull(fourDimArrayPtr)) {
+				cout << "Error! Common formated data object has not been created" << endl;
+				break;
+			}
+
+			fourDimArrayConcentrationsPtr = new FourDimArray(1, fourDimArrayPtr->getAmountOfComponent, fourDimArrayPtr->getAmountOfSampleName, 1);
+			fourDimArrayConcentrationsPtr->pasteValuesInCopyFormat(fourDimArrayPtr, arrayOfSessions, "c");//дописать копирование формата сессий и вставки значений для концентраций
+			fourDimArrayConcentrationsPtr->setDescription("Concentrations of CRMs");
+
+
+			fourDimArrayUncertaintiesPtr = new FourDimArray(1, fourDimArrayPtr->getAmountOfComponent, fourDimArrayPtr->getAmountOfSampleName, 1);
+			fourDimArrayUncertaintiesPtr->pasteValuesInCopyFormat(fourDimArrayPtr, arrayOfSessions, "u");//дописать копирование формата сессий и вставки значений для неопределённостей
+			fourDimArrayUncertaintiesPtr->setDescription("Uncertainties of CRM's concentrations");
+
 			cout << endl << "Inner data is:" << endl;
 			fourDimArrayPtr->printFourDimArray();
 			break;
@@ -220,7 +270,18 @@ void Service::callMenu() {
 			averagefourDimArrayPtr->printFourDimArray();
 			break;
 		case 14:
-			if (Service::saveReport(fourDimArrayPtr, averagefourDimArrayPtr)) {
+			if (isPtrNull(fourDimArrayPtr)) {
+				cout << "fourDimArray is empty" << endl;
+				break;
+			}
+			if (isPtrNull(fourDimArrayPtr)) {
+				cout << "averagefourDimArrayPtr is empty" << endl;
+				break;
+			}
+
+			break;
+		case 99:
+			if (Service::saveReport(fourDimArrayPtr, averagefourDimArrayPtr, NULL)) {
 				cout << endl << "Report has been saved as report.csv" << endl;
 			}
 			else {
@@ -238,7 +299,7 @@ void Service::callMenu() {
 
 template<class T>
 bool Service::isPtrNull(T *sPtr) {
-	return sPtr == NULL ? true : false;
+	return sPtr == NULL;
 }
 
 string Service::numberEnding(int number) {
@@ -250,16 +311,21 @@ string Service::numberEnding(int number) {
 	}
 }
 
-bool Service::saveReport(FourDimArray *fourDimArrayPtr, FourDimArray *averagefourDimArrayPtr) {
-	ofstream fout;
-	fout.open("report.csv");
-	if (Service::isPtrNull(fourDimArrayPtr) || Service::isPtrNull(averagefourDimArrayPtr)) {
+bool Service::saveReport(FourDimArray* fourDimArrayPtr, ...) {
+	
+	if (isPtrNull(fourDimArrayPtr)) {
 		return false;
 	}
 
-	writeOneFourDimArray(fourDimArrayPtr, fout);
-	writeOneFourDimArray(averagefourDimArrayPtr, fout);
+	ofstream fout;
+	fout.open("report.csv");
 
+	FourDimArray** ptr = &fourDimArrayPtr;
+	while (*ptr != NULL) {
+		writeOneFourDimArray(*ptr, fout);
+		++ptr;
+	}
+	
 	fout.close();
 	return true;
 }

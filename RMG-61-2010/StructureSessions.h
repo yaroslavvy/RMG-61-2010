@@ -5,6 +5,8 @@
 
 struct sessions {
 	DataTable **sessionDataTablesArray;
+	DataTable *crmConcentraions;
+	DataTable *crmUncertainties;
 	int amountOfSessions;
 };
 

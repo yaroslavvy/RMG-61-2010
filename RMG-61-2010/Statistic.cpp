@@ -8,6 +8,7 @@ using std::endl;
 #include <clocale>
 #include <cstdlib>
 #include <cmath>
+#include <stdarg.h>
 #include <string>
 using std::string;
 #include <fstream>
@@ -61,6 +62,16 @@ FourDimArray * Statistic::averageCalculate(FourDimArray * input) {
 		}
 	}
 	return sPtr;
+}
+
+FourDimArray * Statistic::biasCalculate(FourDimArray * input) {
+	return input;//дописать
+}
+
+
+
+FourDimArray * Statistic::dispersionCalculate(FourDimArray * input) {
+	return input;//дописать
 }
 
 Statistic::~Statistic() {

@@ -8,6 +8,7 @@ using std::endl;
 #include <clocale>
 #include <cstdlib>
 #include <cmath>
+#include <stdarg.h>
 #include <string>
 using std::string;
 #include <fstream>

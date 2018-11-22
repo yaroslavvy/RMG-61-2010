@@ -8,6 +8,8 @@ class Statistic
 public:
 	Statistic();
 	static FourDimArray * averageCalculate(FourDimArray * input);
+	static FourDimArray * biasCalculate(FourDimArray * input);
+	static FourDimArray * dispersionCalculate(FourDimArray * input);
 	~Statistic();
 protected:
 

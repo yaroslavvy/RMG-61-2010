@@ -15,7 +15,7 @@ public:
 	template<class T>
 	static bool isPtrNull(T *sPtr);
 	static string numberEnding(int number);
-	static bool saveReport(FourDimArray *fourDimArrayPtr, FourDimArray *averagefourDimArrayPtr);
+	static bool saveReport(FourDimArray* fourDimArrayPtr, ...);
 	static void writeOneFourDimArray(FourDimArray *fourDimArrayPtr, ofstream & fout);
 	~Service();
 protected:
@@ -32,6 +32,8 @@ protected:
 	//static DataTable **sessionDataTablesArray;
 	static struct sessions *arrayOfSessions;
 	static FourDimArray *fourDimArrayPtr;
+	static FourDimArray *fourDimArrayConcentrationsPtr;
+	static FourDimArray *fourDimArrayUncertaintiesPtr;
 	static FourDimArray *averagefourDimArrayPtr;
 
 };
