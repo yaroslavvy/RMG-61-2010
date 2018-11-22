@@ -24,6 +24,7 @@ FourDimArray::FourDimArray(int session, int component, int sampleName, int paral
 	setAmountOfParallel(parallel);
 	componentArray = new string[getAmountOfComponent()];
 	sampleNameArray = new string[getAmountOfSampleName()];
+	setDescription("Some four-dimension array with some data");
 	tmpFloat = 1.000;
 	tmpInt = 1;
 	tmpBool = true;
@@ -78,6 +79,11 @@ void FourDimArray::setAmountOfParallel(int item) {
 	return;
 }
 
+void FourDimArray::setDescription(string item) {
+	description = item;
+	return;
+}
+
 int FourDimArray::getAmountOfSession() {
 	return amountOfSession;
 }
@@ -95,6 +101,10 @@ int FourDimArray::getAmountOfSampleName() {
 
 int FourDimArray::getAmountOfParallel() {
 	return amountOfParallel;
+}
+
+string FourDimArray::getDescription() {
+	return description;
 }
 
 

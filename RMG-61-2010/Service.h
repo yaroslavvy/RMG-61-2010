@@ -16,6 +16,7 @@ public:
 	static bool isPtrNull(T *sPtr);
 	static string numberEnding(int number);
 	static bool saveReport(FourDimArray *fourDimArrayPtr, FourDimArray *averagefourDimArrayPtr);
+	static void writeOneFourDimArray(FourDimArray *fourDimArrayPtr, ofstream & fout);
 	~Service();
 protected:
 	static string item;

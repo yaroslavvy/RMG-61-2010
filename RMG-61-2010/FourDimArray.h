@@ -28,11 +28,13 @@ public:
 	void setFourDimArrayStatus(int session, int component, int sampleName, int parallel, int status);
 	void setFourDimArrayVisible(int session, int component, int sampleName, int parallel, bool visible);
 	void setFourDimArrayExist(int session, int component, int sampleName, int parallel, bool exist);
+	void setDescription(string description);
 
 	float getFourDimArrayConcentration(int session, int component, int sampleName, int parallel);
 	int getFourDimArrayStatus(int session, int component, int sampleName, int parallel);
 	bool getFourDimArrayVisible(int session, int component, int sampleName, int parallel);
 	bool getFourDimArrayExist(int session, int component, int sampleName, int parallel);
+	string getDescription();
 
 	void pushParallel(int session, int component, int sampleName, float concentration);
 
@@ -57,6 +59,8 @@ protected:
 	string *sampleNameArray;
 
 	struct cell ****fourdimarray;
+
+	string description;
 
 	float tmpFloat;
 	int tmpInt;

@@ -205,6 +205,7 @@ void Service::callMenu() {
 			break;
 		case 12:
 			fourDimArrayPtr = FourDimArray::extractDataFromTableToFourDimArray(arrayOfSessions);
+			fourDimArrayPtr->setDescription("Common formated data");
 			cout << endl << "Inner data is:" << endl;
 			fourDimArrayPtr->printFourDimArray();
 			break;
@@ -214,6 +215,7 @@ void Service::callMenu() {
 				break;
 			}
 			averagefourDimArrayPtr = Statistic::averageCalculate(fourDimArrayPtr);
+			averagefourDimArrayPtr->setDescription("Average values");
 			cout << endl << "Average values among parallels of inner data is:" << endl;
 			averagefourDimArrayPtr->printFourDimArray();
 			break;
@@ -254,7 +256,17 @@ bool Service::saveReport(FourDimArray *fourDimArrayPtr, FourDimArray *averagefou
 	if (Service::isPtrNull(fourDimArrayPtr) || Service::isPtrNull(averagefourDimArrayPtr)) {
 		return false;
 	}
-	fout << "Report";// common data
+
+	writeOneFourDimArray(fourDimArrayPtr, fout);
+	writeOneFourDimArray(averagefourDimArrayPtr, fout);
+
+	fout.close();
+	return true;
+}
+
+void Service::writeOneFourDimArray(FourDimArray *fourDimArrayPtr, ofstream & fout) {
+	fout << "\n";
+	fout << fourDimArrayPtr->getDescription();
 	fout << "\n";
 	for (int s = 0; s < fourDimArrayPtr->getAmountOfSession(); s++) {
 		fout << s + 1 << " session:" << ";";
@@ -281,45 +293,8 @@ bool Service::saveReport(FourDimArray *fourDimArrayPtr, FourDimArray *averagefou
 			fout << "\n";
 		}
 	}
-
-	fout << "\n" << "\n";// Average values
-	fout << "Average values";
-	fout << "\n";
-	for (int s = 0; s < averagefourDimArrayPtr->getAmountOfSession(); s++) {
-		fout << s + 1 << " session:" << ";";
-		for (int c = 0; c < averagefourDimArrayPtr->getAmountOfComponent(); c++) {
-			fout << averagefourDimArrayPtr->getStrComponent(c);
-			c == (averagefourDimArrayPtr->getAmountOfComponent() - 1) ? fout << "\n" : fout << ";";
-		}
-		for (int sN = 0; sN < averagefourDimArrayPtr->getAmountOfSampleName(); sN++) {
-			fout << averagefourDimArrayPtr->getStrSampleName(sN) << ";";
-			for (int p = 0; p < averagefourDimArrayPtr->getAmountOfParallel(); p++) {
-				for (int c = 0; c < averagefourDimArrayPtr->getAmountOfComponent(); c++) {
-					averagefourDimArrayPtr->getFourDimArrayExist(s, c, sN, p) && averagefourDimArrayPtr->getFourDimArrayVisible(s, c, sN, p) ? fout << averagefourDimArrayPtr->getFourDimArrayConcentration(s, c, sN, p) : fout << "";
-					if (c < (averagefourDimArrayPtr->getAmountOfComponent() - 1)) {
-						fout << ";";
-					}
-				}
-				if (averagefourDimArrayPtr->getAmountOfParallel() != 1) {
-					fout << "\n" << ";";
-				}
-			}
-			fout << "\n";
-		}
-		if (averagefourDimArrayPtr->getAmountOfParallel() == 1) {
-			fout << "\n";
-		}
-	}
-
-	fout.close();
-	return true;
 }
 
 Service::~Service()
 {
 }
-
-/*fout << "Average values";
-for (int i = 0; i < averagefourDimArrayPtr->getAmountOfComponent(); i++) {
-	fout << ";";
-}*/
