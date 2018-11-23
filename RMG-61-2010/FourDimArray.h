@@ -38,6 +38,8 @@ public:
 
 	void pushParallel(int session, int component, int sampleName, float concentration);
 
+	void pasteValuesInCopyFormat(FourDimArray *fourDimArrayPtr, struct sessions *arrayOfSessions, string mode);
+
 	void setStrComponent(int componentOrder, string component);
 	void setStrSampleName(int sampleNameOrder, string sampleName);
 

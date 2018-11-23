@@ -365,6 +365,11 @@ void FourDimArray::pushParallel(int session, int component, int sampleName, floa
 	return;
 }
 
+void pasteValuesInCopyFormat(FourDimArray *fourDimArrayPtr, struct sessions *arrayOfSessions, string mode) {
+	
+	return;
+}
+
 FourDimArray::~FourDimArray() {
 
 }
