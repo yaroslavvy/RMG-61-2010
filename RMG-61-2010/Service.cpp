@@ -247,13 +247,13 @@ void Service::callMenu() {
 				break;
 			}
 
-			fourDimArrayConcentrationsPtr = new FourDimArray(1, fourDimArrayPtr->getAmountOfComponent, fourDimArrayPtr->getAmountOfSampleName, 1);
-			fourDimArrayConcentrationsPtr->pasteValuesInCopyFormat(fourDimArrayPtr, arrayOfSessions, "c");//дописать копирование формата сессий и вставки значений для концентраций
+			fourDimArrayConcentrationsPtr = new FourDimArray(1, fourDimArrayPtr->getAmountOfComponent(), fourDimArrayPtr->getAmountOfSampleName(), 1);
+			//fourDimArrayConcentrationsPtr->pasteValuesInCopyFormat(fourDimArrayPtr, arrayOfSessions, "c");//дописать копирование формата сессий и вставки значений для концентраций
 			fourDimArrayConcentrationsPtr->setDescription("Concentrations of CRMs");
 
 
-			fourDimArrayUncertaintiesPtr = new FourDimArray(1, fourDimArrayPtr->getAmountOfComponent, fourDimArrayPtr->getAmountOfSampleName, 1);
-			fourDimArrayUncertaintiesPtr->pasteValuesInCopyFormat(fourDimArrayPtr, arrayOfSessions, "u");//дописать копирование формата сессий и вставки значений для неопределённостей
+			fourDimArrayUncertaintiesPtr = new FourDimArray(1, fourDimArrayPtr->getAmountOfComponent(), fourDimArrayPtr->getAmountOfSampleName(), 1);
+			//fourDimArrayUncertaintiesPtr->pasteValuesInCopyFormat(fourDimArrayPtr, arrayOfSessions, "u");//дописать копирование формата сессий и вставки значений для неопределённостей
 			fourDimArrayUncertaintiesPtr->setDescription("Uncertainties of CRM's concentrations");
 
 			cout << endl << "Inner data is:" << endl;
