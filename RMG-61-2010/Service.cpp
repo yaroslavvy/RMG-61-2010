@@ -35,6 +35,7 @@ FourDimArray * Service::fourDimArrayUncertaintiesPtr = NULL;
 FourDimArray * Service::averageFourDimArrayPtr = NULL;
 FourDimArray * Service::biasFourDimArrayPtr = NULL;
 FourDimArray * Service::dispersionFourDimArrayPtr = NULL;
+FourDimArray * Service::cochrenCriteriaPtr = NULL;
 
 
 Service::Service()
@@ -299,6 +300,21 @@ void Service::callMenu() {
 			biasFourDimArrayPtr->setDescription("Bias values");
 			cout << endl << biasFourDimArrayPtr->getDescription() << endl;
 			biasFourDimArrayPtr->printFourDimArray();
+
+			if (isPtrNull(biasFourDimArrayPtr)) {
+				cout << "biasFourDimArrayPtr is empty" << endl;
+				break;
+			}
+			if (isPtrNull(dispersionFourDimArrayPtr)) {
+				cout << "dispersionFourDimArrayPtr is empty" << endl;
+				break;
+			}
+			delete cochrenCriteriaPtr;
+			cochrenCriteriaPtr = NULL;
+			while (Statistic::cochrenCriteriaCalculate(cochrenCriteriaPtr, fourDimArrayPtr, dispersionFourDimArrayPtr))
+			cochrenCriteriaPtr->setDescription("Cochren criteria");
+			cout << endl << cochrenCriteriaPtr->getDescription() << endl;
+			cochrenCriteriaPtr->printFourDimArray();
 			
 			break;
 		case 99:

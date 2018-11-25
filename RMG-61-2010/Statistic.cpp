@@ -127,5 +127,11 @@ FourDimArray * Statistic::dispersionCalculate(FourDimArray * input, FourDimArray
 	return sPtr;
 }
 
+bool Statistic::cochrenCriteriaCalculate(FourDimArray * cochrenCriteria, FourDimArray * input, FourDimArray * dispersion) {
+	//пиши есчо
+	return true;// если за текущую иттерацию были исключения дисперсий
+	return false;//если исключений дисперсий за текущую иттерацию не было
+}
+
 Statistic::~Statistic() {
 }
