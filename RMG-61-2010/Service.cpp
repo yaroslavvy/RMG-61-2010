@@ -32,7 +32,9 @@ struct sessions * Service::arrayOfSessions = NULL;
 FourDimArray * Service::fourDimArrayPtr = NULL;
 FourDimArray * Service::fourDimArrayConcentrationsPtr = NULL;
 FourDimArray * Service::fourDimArrayUncertaintiesPtr = NULL;
-FourDimArray * Service::averagefourDimArrayPtr = NULL;
+FourDimArray * Service::averageFourDimArrayPtr = NULL;
+FourDimArray * Service::biasFourDimArrayPtr = NULL;
+FourDimArray * Service::dispersionFourDimArrayPtr = NULL;
 
 
 Service::Service()
@@ -45,7 +47,7 @@ void Service::callMenu() {
 		cout << "3 - next row" << endl << "4 - print element" << endl << "5 - save in file " << endl << "6 - read from file" << endl;
 		cout << "7 - extract data from structure to table" << endl << "8 - extract data from table to structure" << endl;
 		cout << "9 - print table" << endl << "10 - create initial data tables for statistic calculation" << endl << "11 - delete data structure" << endl;
-		cout << "12 - identify concentrations" << endl << "13 - calculate average values" << endl << "99 - save the report" << endl;
+		cout << "12 - identify concentrations" << endl << "13 - calculate average values, bias and dispersion" << endl << "99 - save the report" << endl;
 		cout << "100 - exit" << endl << endl;
 		cin >> command;
 		cout << endl;
@@ -196,7 +198,7 @@ void Service::callMenu() {
 				startPtr = NULL;
 				tmp++;
 			}
-			
+			tmp = 1;
 			do {
 				cout << endl << "Input name of file which includes concentrations of CRMs:" << endl;
 				getline(cin, fileName);
@@ -248,40 +250,59 @@ void Service::callMenu() {
 			}
 
 			fourDimArrayConcentrationsPtr = new FourDimArray(1, fourDimArrayPtr->getAmountOfComponent(), fourDimArrayPtr->getAmountOfSampleName(), 1);
-			//fourDimArrayConcentrationsPtr->pasteValuesInCopyFormat(fourDimArrayPtr, arrayOfSessions, "c");//дописать копирование формата сессий и вставки значений для концентраций
+			fourDimArrayConcentrationsPtr->pasteValuesInCopyFormat(fourDimArrayPtr, arrayOfSessions->crmConcentraions, NULL);
 			fourDimArrayConcentrationsPtr->setDescription("Concentrations of CRMs");
 
-
 			fourDimArrayUncertaintiesPtr = new FourDimArray(1, fourDimArrayPtr->getAmountOfComponent(), fourDimArrayPtr->getAmountOfSampleName(), 1);
-			//fourDimArrayUncertaintiesPtr->pasteValuesInCopyFormat(fourDimArrayPtr, arrayOfSessions, "u");//дописать копирование формата сессий и вставки значений для неопределённостей
+			fourDimArrayUncertaintiesPtr->pasteValuesInCopyFormat(fourDimArrayPtr, arrayOfSessions->crmUncertainties, fourDimArrayConcentrationsPtr);
 			fourDimArrayUncertaintiesPtr->setDescription("Uncertainties of CRM's concentrations");
 
-			cout << endl << "Inner data is:" << endl;
+			cout << endl << fourDimArrayPtr->getDescription() << ":" << endl;
 			fourDimArrayPtr->printFourDimArray();
+
+			cout << endl << fourDimArrayConcentrationsPtr->getDescription() << ":" << endl;
+			fourDimArrayConcentrationsPtr->printFourDimArray();
+
+			cout << endl << fourDimArrayUncertaintiesPtr->getDescription() << ":" << endl;
+			fourDimArrayUncertaintiesPtr->printFourDimArray();
 			break;
 		case 13:
 			if (isPtrNull(fourDimArrayPtr)) {
 				cout << "fourDimArray is empty" << endl;
 				break;
 			}
-			averagefourDimArrayPtr = Statistic::averageCalculate(fourDimArrayPtr);
-			averagefourDimArrayPtr->setDescription("Average values");
-			cout << endl << "Average values among parallels of inner data is:" << endl;
-			averagefourDimArrayPtr->printFourDimArray();
-			break;
-		case 14:
-			if (isPtrNull(fourDimArrayPtr)) {
-				cout << "fourDimArray is empty" << endl;
-				break;
-			}
-			if (isPtrNull(fourDimArrayPtr)) {
-				cout << "averagefourDimArrayPtr is empty" << endl;
-				break;
-			}
+			delete averageFourDimArrayPtr;
+			averageFourDimArrayPtr = NULL;
+			averageFourDimArrayPtr = Statistic::averageCalculate(fourDimArrayPtr);
+			averageFourDimArrayPtr->setDescription("Average values");
+			cout << endl << averageFourDimArrayPtr->getDescription() << endl;
+			averageFourDimArrayPtr->printFourDimArray();
 
+			if (isPtrNull(averageFourDimArrayPtr)) {
+				cout << "averageFourDimArrayPtr is empty" << endl;
+				break;
+			}
+			delete dispersionFourDimArrayPtr;
+			dispersionFourDimArrayPtr = NULL;
+			dispersionFourDimArrayPtr = Statistic::dispersionCalculate(fourDimArrayPtr, averageFourDimArrayPtr);
+			dispersionFourDimArrayPtr->setDescription("Dispersion values");
+			cout << endl << dispersionFourDimArrayPtr->getDescription() << endl;
+			dispersionFourDimArrayPtr->printFourDimArray();
+
+			if (isPtrNull(fourDimArrayConcentrationsPtr)) {
+				cout << "fourDimArrayConcentrationsPtr is empty" << endl;
+				break;
+			}
+			delete biasFourDimArrayPtr;
+			biasFourDimArrayPtr = NULL;
+			biasFourDimArrayPtr = Statistic::biasCalculate(averageFourDimArrayPtr, fourDimArrayConcentrationsPtr);
+			biasFourDimArrayPtr->setDescription("Bias values");
+			cout << endl << biasFourDimArrayPtr->getDescription() << endl;
+			biasFourDimArrayPtr->printFourDimArray();
+			
 			break;
 		case 99:
-			if (Service::saveReport(fourDimArrayPtr, averagefourDimArrayPtr, NULL)) {
+			if (Service::saveReport(fourDimArrayPtr, fourDimArrayConcentrationsPtr, fourDimArrayUncertaintiesPtr, averageFourDimArrayPtr, dispersionFourDimArrayPtr, biasFourDimArrayPtr, NULL)) {
 				cout << endl << "Report has been saved as report.csv" << endl;
 			}
 			else {
@@ -335,7 +356,7 @@ void Service::writeOneFourDimArray(FourDimArray *fourDimArrayPtr, ofstream & fou
 	fout << fourDimArrayPtr->getDescription();
 	fout << "\n";
 	for (int s = 0; s < fourDimArrayPtr->getAmountOfSession(); s++) {
-		fout << s + 1 << " session:" << ";";
+		fourDimArrayPtr->getAmountOfSession() == 1 ? fout << ";" : fout << s + 1 << " session:" << ";";
 		for (int c = 0; c < fourDimArrayPtr->getAmountOfComponent(); c++) {
 			fout << fourDimArrayPtr->getStrComponent(c);
 			c == (fourDimArrayPtr->getAmountOfComponent() - 1) ? fout << "\n" : fout << ";";

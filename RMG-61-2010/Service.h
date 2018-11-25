@@ -34,7 +34,9 @@ protected:
 	static FourDimArray *fourDimArrayPtr;
 	static FourDimArray *fourDimArrayConcentrationsPtr;
 	static FourDimArray *fourDimArrayUncertaintiesPtr;
-	static FourDimArray *averagefourDimArrayPtr;
+	static FourDimArray *averageFourDimArrayPtr;
+	static FourDimArray *biasFourDimArrayPtr;
+	static FourDimArray *dispersionFourDimArrayPtr;
 
 };
 #endif // !SERVICE_H

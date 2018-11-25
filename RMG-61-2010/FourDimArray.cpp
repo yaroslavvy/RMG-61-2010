@@ -266,7 +266,7 @@ FourDimArray * FourDimArray::extractDataFromTableToFourDimArray(struct sessions 
 
 void FourDimArray::printFourDimArray() {
 	for (int s = 0; s < getAmountOfSession(); s++) {
-		cout << endl << s + 1 << " session:" << endl;
+		getAmountOfSession() == 1 ? cout << endl : cout << endl << s + 1 << " session:" << endl;
 		cout << "\t\t\t";
 		for (int c = 0; c < getAmountOfComponent(); c++) {
 			cout << getStrComponent(c);
@@ -276,7 +276,7 @@ void FourDimArray::printFourDimArray() {
 			cout << getStrSampleName(sN) << "\t\t";
 			for (int p = 0; p < getAmountOfParallel(); p++) {
 				for (int c = 0; c < getAmountOfComponent(); c++) {
-					getFourDimArrayExist(s, c, sN, p) && getFourDimArrayVisible(s, c, sN, p) ? cout << getFourDimArrayConcentration(s, c, sN, p) : cout << "";
+					(getFourDimArrayStatus(s, c, sN, p) == 0) && getFourDimArrayExist(s, c, sN, p) && getFourDimArrayVisible(s, c, sN, p) ? cout << getFourDimArrayConcentration(s, c, sN, p) : cout << "";
 					if (c < (getAmountOfComponent() - 1)) {
 						cout << "\t\t";
 					}
@@ -365,8 +365,44 @@ void FourDimArray::pushParallel(int session, int component, int sampleName, floa
 	return;
 }
 
-void pasteValuesInCopyFormat(FourDimArray *fourDimArrayPtr, struct sessions *arrayOfSessions, string mode) {
-	
+void FourDimArray::pasteValuesInCopyFormat(FourDimArray *fourDimArrayPtr, DataTable *crm, FourDimArray *crmConcentration) {
+	string tmpString = "";
+	for (int c = 0; c < fourDimArrayPtr->getAmountOfComponent(); c++) {
+		setStrComponent(c, fourDimArrayPtr->getStrComponent(c));
+	}
+	for (int sN = 0; sN < fourDimArrayPtr->getAmountOfSampleName(); sN++) {
+		setStrSampleName(sN, fourDimArrayPtr->getStrSampleName(sN));
+	}
+	for (int c = 0; c < getAmountOfComponent(); c++) {
+		for (int iC = 0; iC < crm->getAmountOfMatrixColumns(); iC++) {
+			if (getStrComponent(c) == crm->getComponentArray(iC)) {
+				for (int sN = 0; sN < getAmountOfSampleName(); sN++) {
+					for (int iSn = 0; iSn < crm->getAmountOfMatrixRows(); iSn++) {
+						if (getStrSampleName(sN) == crm->getNameArray(iSn)) {
+							if ((crm->getMatrixValue(iC, iSn) != "") && (crm->getMatrixValue(iC, iSn) != "NA")) {
+								if (crm->getMatrixValue(iC, iSn).find('%') == string::npos) {
+									pushParallel(0, c, sN, stof(crm->getMatrixValue(iC, iSn)));
+								}
+								else {
+									if(crmConcentration == NULL){
+										cout << "Error! Char '%' used in file with concentrations. Use this char only in file with uncertainties" << endl;
+										return;
+									}
+									tmpString.clear();
+									for (int i = 0; i < crm->getMatrixValue(iC, iSn).find('%'); i++) {
+										tmpString += crm->getMatrixValue(iC, iSn)[i];
+									}
+									if (crmConcentration->getFourDimArrayExist(0, c, sN, 0)) {
+										pushParallel(0, c, sN, stof(tmpString)*0.01*crmConcentration->getFourDimArrayConcentration(0, c, sN, 0));
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 	return;
 }
 
