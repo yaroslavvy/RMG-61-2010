@@ -10,7 +10,7 @@ public:
 	static FourDimArray * averageCalculate(FourDimArray * input);
 	static FourDimArray * biasCalculate(FourDimArray * average, FourDimArray * concentrations);
 	static FourDimArray * dispersionCalculate(FourDimArray * input, FourDimArray * average);
-	static bool cochrenCriteriaCalculate(FourDimArray * cochrenCriteria, FourDimArray * input, FourDimArray * dispersion);
+	static bool cochranAndBartlettCriterionCalculate(FourDimArray * input, FourDimArray * dispersion);
 	~Statistic();
 protected:
 

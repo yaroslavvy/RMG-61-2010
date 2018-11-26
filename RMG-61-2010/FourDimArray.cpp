@@ -89,6 +89,18 @@ int FourDimArray::getAmountOfSession() {
 	return amountOfSession;
 }
 
+int FourDimArray::getAmountOfSession(int component, int sampleName) {
+	int sessionCounter = 0;
+	for (int s = 0; s < getAmountOfSession(); s++) {
+		for (int p = 0; p < getAmountOfParallel(); p++) {
+			if ((getFourDimArrayStatus(s, component, sampleName, p) == 0) && (getFourDimArrayExist(s, component, sampleName, p))) {
+				p = getAmountOfParallel();
+				sessionCounter++;
+			}
+		}
+	}
+	return sessionCounter;
+}
 
 int FourDimArray::getAmountOfComponent() {
 	return amountOfComponent;
@@ -102,6 +114,16 @@ int FourDimArray::getAmountOfSampleName() {
 
 int FourDimArray::getAmountOfParallel() {
 	return amountOfParallel;
+}
+
+int FourDimArray::getAmountOfParallel(int session, int component, int sampleName) {
+	int parallelCounter = 0;
+	for (int p = 0; p < getAmountOfParallel(); p++) {
+		if ((getFourDimArrayStatus(session, component, sampleName, p) == 0) && (getFourDimArrayExist(session, component, sampleName, p))) {
+			parallelCounter++;
+		}
+	}
+	return parallelCounter;
 }
 
 string FourDimArray::getDescription() {

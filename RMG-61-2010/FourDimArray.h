@@ -16,9 +16,11 @@ public:
 	void setAmountOfParallel(int item);
 
 	int getAmountOfSession();
+	int getAmountOfSession(int component, int sampleName);
 	int getAmountOfComponent();
 	int getAmountOfSampleName();
 	int getAmountOfParallel();
+	int getAmountOfParallel(int session, int component, int sampleName);
 
 	static FourDimArray * extractDataFromTableToFourDimArray(struct sessions * arrayOfSessions);
 

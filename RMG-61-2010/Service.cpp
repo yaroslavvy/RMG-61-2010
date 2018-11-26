@@ -35,7 +35,6 @@ FourDimArray * Service::fourDimArrayUncertaintiesPtr = NULL;
 FourDimArray * Service::averageFourDimArrayPtr = NULL;
 FourDimArray * Service::biasFourDimArrayPtr = NULL;
 FourDimArray * Service::dispersionFourDimArrayPtr = NULL;
-FourDimArray * Service::cochrenCriteriaPtr = NULL;
 
 
 Service::Service()
@@ -268,53 +267,53 @@ void Service::callMenu() {
 			fourDimArrayUncertaintiesPtr->printFourDimArray();
 			break;
 		case 13:
-			if (isPtrNull(fourDimArrayPtr)) {
-				cout << "fourDimArray is empty" << endl;
-				break;
-			}
-			delete averageFourDimArrayPtr;
-			averageFourDimArrayPtr = NULL;
-			averageFourDimArrayPtr = Statistic::averageCalculate(fourDimArrayPtr);
-			averageFourDimArrayPtr->setDescription("Average values");
-			cout << endl << averageFourDimArrayPtr->getDescription() << endl;
-			averageFourDimArrayPtr->printFourDimArray();
+			do {
+				if (isPtrNull(fourDimArrayPtr)) {
+					cout << "fourDimArray is empty" << endl;
+					break;
+				}
+				delete averageFourDimArrayPtr;
+				averageFourDimArrayPtr = NULL;
+				averageFourDimArrayPtr = Statistic::averageCalculate(fourDimArrayPtr);
+				averageFourDimArrayPtr->setDescription("Average values");
+				
+				if (isPtrNull(averageFourDimArrayPtr)) {
+					cout << "averageFourDimArrayPtr is empty" << endl;
+					break;
+				}
+				delete dispersionFourDimArrayPtr;
+				dispersionFourDimArrayPtr = NULL;
+				dispersionFourDimArrayPtr = Statistic::dispersionCalculate(fourDimArrayPtr, averageFourDimArrayPtr);
+				dispersionFourDimArrayPtr->setDescription("Dispersion values");
+				
+				if (isPtrNull(fourDimArrayConcentrationsPtr)) {
+					cout << "fourDimArrayConcentrationsPtr is empty" << endl;
+					break;
+				}
+				delete biasFourDimArrayPtr;
+				biasFourDimArrayPtr = NULL;
+				biasFourDimArrayPtr = Statistic::biasCalculate(averageFourDimArrayPtr, fourDimArrayConcentrationsPtr);
+				biasFourDimArrayPtr->setDescription("Bias values");
+				
+				if (isPtrNull(biasFourDimArrayPtr)) {
+					cout << "biasFourDimArrayPtr is empty" << endl;
+					break;
+				}
+				if (isPtrNull(dispersionFourDimArrayPtr)) {
+					cout << "dispersionFourDimArrayPtr is empty" << endl;
+					break;
+				}
 
-			if (isPtrNull(averageFourDimArrayPtr)) {
-				cout << "averageFourDimArrayPtr is empty" << endl;
-				break;
-			}
-			delete dispersionFourDimArrayPtr;
-			dispersionFourDimArrayPtr = NULL;
-			dispersionFourDimArrayPtr = Statistic::dispersionCalculate(fourDimArrayPtr, averageFourDimArrayPtr);
-			dispersionFourDimArrayPtr->setDescription("Dispersion values");
+			} while (Statistic::cochranAndBartlettCriterionCalculate(fourDimArrayPtr, dispersionFourDimArrayPtr));
+
+			cout << endl << averageFourDimArrayPtr->getDescription() << endl;
+			averageFourDimArrayPtr->printFourDimArray();// print нужно изменить так чтобы выводились точки выпавшие по определённым критериям
+
 			cout << endl << dispersionFourDimArrayPtr->getDescription() << endl;
 			dispersionFourDimArrayPtr->printFourDimArray();
 
-			if (isPtrNull(fourDimArrayConcentrationsPtr)) {
-				cout << "fourDimArrayConcentrationsPtr is empty" << endl;
-				break;
-			}
-			delete biasFourDimArrayPtr;
-			biasFourDimArrayPtr = NULL;
-			biasFourDimArrayPtr = Statistic::biasCalculate(averageFourDimArrayPtr, fourDimArrayConcentrationsPtr);
-			biasFourDimArrayPtr->setDescription("Bias values");
 			cout << endl << biasFourDimArrayPtr->getDescription() << endl;
 			biasFourDimArrayPtr->printFourDimArray();
-
-			if (isPtrNull(biasFourDimArrayPtr)) {
-				cout << "biasFourDimArrayPtr is empty" << endl;
-				break;
-			}
-			if (isPtrNull(dispersionFourDimArrayPtr)) {
-				cout << "dispersionFourDimArrayPtr is empty" << endl;
-				break;
-			}
-			delete cochrenCriteriaPtr;
-			cochrenCriteriaPtr = NULL;
-			while (Statistic::cochrenCriteriaCalculate(cochrenCriteriaPtr, fourDimArrayPtr, dispersionFourDimArrayPtr))
-			cochrenCriteriaPtr->setDescription("Cochren criteria");
-			cout << endl << cochrenCriteriaPtr->getDescription() << endl;
-			cochrenCriteriaPtr->printFourDimArray();
 			
 			break;
 		case 99:
