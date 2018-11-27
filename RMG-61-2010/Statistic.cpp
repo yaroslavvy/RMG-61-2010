@@ -128,11 +128,114 @@ FourDimArray * Statistic::dispersionCalculate(FourDimArray * input, FourDimArray
 }
 
 bool Statistic::cochranAndBartlettCriterionCalculate(FourDimArray * input, FourDimArray * dispersion) {
+	bool changes = false;
+	for (int c = 0; c < input->getAmountOfComponent(); c++) {
+		for (int sN = 0; sN < input->getAmountOfSampleName(); sN++) {
+			switch (Statistic::selectCochranOrBartlettCriterion(input, dispersion, c, sN)) {
+				case 1: 
+					changes |= Statistic::cochranCriterionCalculate(input, dispersion, c, sN);
+					break;
+				case 2:
+					changes |= Statistic::bartlettCriterionCalculate(input, dispersion, c, sN);
+					break;
+				default: 
+					break;
+			}
+		}
+	}
+	return changes;
+}
 
+int Statistic::selectCochranOrBartlettCriterion(FourDimArray * input, FourDimArray * dispersion, int component, int sampleName) {
+	if (dispersion->getAmountOfSession(component, sampleName) < 2) {
+		return 0;
+	}//самое первое - проверка на необходимость отбора дисперсий по любым критериям (отсутствие или 1 сессия, т.е. отсутствие или 1 дисперсия не могут работать ни с одним из критериев)
+	
+	for (int s = 0; s < input->getAmountOfSession(); s++) {
+		for (int p = 0; p < input->getAmountOfParallel(); p++) {
+			if (input->getFourDimArrayStatus(s, component, sampleName, p) != 0) {
+				return input->getFourDimArrayStatus(s, component, sampleName, p);
+			}
+		}
+	}// если среди сессий одного компонента и образца уже был критериальный отсев, то необходимо продолжить пользоваться старым критерием вне зависимости от всех остальных факторов
+	if ((dispersion->getAmountOfSession(component, sampleName) > 40)) {
+		return 2;
+	}// если более 40 сессий, то работает только Бартлетт
+	int i = 0;
+	int *arrayOfParallels = new int[dispersion->getAmountOfSession(component, sampleName)];
+	for (int s = 0; s < input->getAmountOfSession(); s++) {
+		if (input->getAmountOfParallel(s, component, sampleName) > 1) {
+			if (input->getAmountOfParallel(s, component, sampleName) > 6) {
+				return 2;
+			}// если в какой-то сессии более 6 параллельных испытаний, то работает только Бартлетт
+			arrayOfParallels[i] = input->getAmountOfParallel(s, component, sampleName);
+			i++;
+		}
+	}
 
+	if (Statistic::arrayElementsAreEqual(arrayOfParallels, input->getAmountOfSession(component, sampleName))) {
+		return 1;// количество параллелей во всех сессиях одинаково, значит Кохрен
+	}
+	else {
+		return 2;// количество параллелей в сессиях неодинаково, значит Бартлетт
+	}
+}
 
+bool Statistic::arrayElementsAreEqual(int *array, int length) {
+	for (int i = 1; i < length; i++) {
+		if (array[i - 1] != array[i]) {
+			return false;
+		}
+	}
+	return true;
+}
 
-	return false;//если исключений дисперсий за текущую иттерацию не было
+bool Statistic::cochranCriterionCalculate(FourDimArray * input, FourDimArray * dispersion, int component, int sampleName) {
+	float maxDispersion = 0;
+	int maxDispersionSession = 0;
+	float totalSumOfDispersions = 0;
+	int amountOfParallels = 0;
+	for (int s = 0; s < dispersion->getAmountOfSession(); s++) {
+		if (((dispersion->getFourDimArrayConcentration(s, component, sampleName, 0)) > maxDispersion) && ((dispersion->getFourDimArrayStatus(s, component, sampleName, 0)) == 0) && (dispersion->getFourDimArrayExist(s, component, sampleName, 0))) {
+			maxDispersion = (dispersion->getFourDimArrayConcentration(s, component, sampleName, 0));
+			maxDispersionSession = s;
+		}
+	}
+	for (int s = 0; s < dispersion->getAmountOfSession(); s++) {
+		if (((dispersion->getFourDimArrayStatus(s, component, sampleName, 0)) == 0) && (dispersion->getFourDimArrayExist(s, component, sampleName, 0))) {
+			totalSumOfDispersions += (dispersion->getFourDimArrayConcentration(s, component, sampleName, 0));
+		}
+	}
+	for (int s = 0; s < input->getAmountOfSession(); s++) {
+		if (input->getAmountOfParallel(s, component, sampleName) > 1) {
+			amountOfParallels = input->getAmountOfParallel(s, component, sampleName);
+			s = input->getAmountOfSession();
+		}
+	}
+	if ((maxDispersion / totalSumOfDispersions) > Statistic::cochranCriticalValues((dispersion->getAmountOfSession(component, sampleName)), amountOfParallels)) {
+		for (int p = 0; p < input->getAmountOfParallel(/*maxDispersionSession, component, sampleName*/); p++) {// кажется перегрузка функции не работает как надо
+			input->setFourDimArrayStatus(maxDispersionSession, component, sampleName, p, 1);
+		}
+		return true;
+	}
+	return false;
+}
+
+bool Statistic::bartlettCriterionCalculate(FourDimArray * input, FourDimArray * dispersion, int component, int sampleName) {
+	
+	return false;
+}
+
+float Statistic::cochranCriticalValues(int amountOfSessions, int amountOfParallels) {
+	float criticalValues[6][5] = {
+		{0.999, 0.975, 0.939, 0.906, 0.877},
+		{0.967, 0.871, 0.798, 0.746, 0.707},
+		{0.906, 0.768, 0.684, 0.629, 0.590},
+		{0.841, 0.684, 0.598, 0.544, 0.506},
+		{0.781, 0.616, 0.532, 0.480, 0.445},
+		{0.727, 0.561, 0.480, 0.431, 0.397}
+	};
+	return criticalValues[amountOfSessions - 2][amountOfParallels - 2];
 }
 
 Statistic::~Statistic() {

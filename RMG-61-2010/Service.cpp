@@ -380,7 +380,24 @@ void Service::writeOneFourDimArray(FourDimArray *fourDimArrayPtr, ofstream & fou
 			fout << fourDimArrayPtr->getStrSampleName(sN) << ";";
 			for (int p = 0; p < fourDimArrayPtr->getAmountOfParallel(); p++) {
 				for (int c = 0; c < fourDimArrayPtr->getAmountOfComponent(); c++) {
-					fourDimArrayPtr->getFourDimArrayExist(s, c, sN, p) && fourDimArrayPtr->getFourDimArrayVisible(s, c, sN, p) ? fout << fourDimArrayPtr->getFourDimArrayConcentration(s, c, sN, p) : fout << "";
+					if (fourDimArrayPtr->getFourDimArrayExist(s, c, sN, p) && fourDimArrayPtr->getFourDimArrayVisible(s, c, sN, p) && (fourDimArrayPtr->getFourDimArrayStatus(s, c, sN, p) == 0)) {
+						fout << fourDimArrayPtr->getFourDimArrayConcentration(s, c, sN, p);
+					}
+					else {
+						if (fourDimArrayPtr->getFourDimArrayExist(s, c, sN, p) && (fourDimArrayPtr->getFourDimArrayStatus(s, c, sN, p) != 0)) {
+							switch (fourDimArrayPtr->getFourDimArrayStatus(s, c, sN, p)) {
+								case 1: fout << "Cochran";
+									break;
+								case 2: fout << "Bartlett";
+									break;
+								default:
+									break;
+							}
+						}
+						else {
+							fout << "";
+						}
+					}
 					if (c < (fourDimArrayPtr->getAmountOfComponent() - 1)) {
 						fout << ";";
 					}
