@@ -16,6 +16,7 @@ public:
 	static bool bartlettCriterionCalculate(FourDimArray * input, FourDimArray * dispersion, int component, int sampleName);
 	static bool arrayElementsAreEqual(int *array, int length);
 	static float cochranCriticalValues(int amountOfSessions, int amountOfParallels);
+	static float chiDistributionValues(int amountOfdipersion);
 	~Statistic();
 protected:
 

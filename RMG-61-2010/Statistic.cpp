@@ -241,8 +241,36 @@ bool Statistic::cochranCriterionCalculate(FourDimArray * input, FourDimArray * d
 }
 
 bool Statistic::bartlettCriterionCalculate(FourDimArray * input, FourDimArray * dispersion, int component, int sampleName) {
-	
+	float averageDispersion = 0;
+	float sumOfDispersionLogarithm = 0;
+	float sumOfReverseAmountOfParallels = 0;
+	int n = 0;
+	float m = 0;
+	float c = 0;
+	float chi = 0;
+	int tmpAmountOfParallels = 0;
+	for (int s = 0; s < dispersion->getAmountOfSession(); s++) {
+		if ((dispersion->getFourDimArrayStatus(s, component, sampleName, 0) == 0) && (dispersion->getFourDimArrayExist(s, component, sampleName, 0))) {
+			averageDispersion += (dispersion->getFourDimArrayConcentration(s, component, sampleName, 0))*(input->getAmountOfParallel(s, component, sampleName) - 1);
+			sumOfDispersionLogarithm += (log(dispersion->getFourDimArrayConcentration(s, component, sampleName, 0)))*(input->getAmountOfParallel(s, component, sampleName) - 1);
+			sumOfReverseAmountOfParallels += (1 / (input->getAmountOfParallel(s, component, sampleName) - 1));
+			n += (input->getAmountOfParallel(s, component, sampleName) - 1);
+		}
+	}
+	averageDispersion /= n;
+	m = (n * log(averageDispersion)) - sumOfDispersionLogarithm;
+	c = 1 + (1 / (3 * (dispersion->getAmountOfSession(component, sampleName) - 1)))*((sumOfReverseAmountOfParallels) - (1/n));
+	chi = m / c;
+
+	/*if (chi > chiDistributionValues(dispersion->getAmountOfSession(component, sampleName))) {
+		tmpAmountOfParallels = input->getAmountOfParallel(input->getAmountOfParallel(), component, sampleName);
+		for (int p = 0; p < tmpAmountOfParallels; p++) {
+			input->setFourDimArrayStatus(maxDispersionSession, component, sampleName, p, 1);
+		}
+		return true;
+	}*/
 	return false;
+
 }
 
 float Statistic::cochranCriticalValues(int amountOfSessions, int amountOfParallels) {
@@ -256,6 +284,11 @@ float Statistic::cochranCriticalValues(int amountOfSessions, int amountOfParalle
 	};
 	return criticalValues[amountOfSessions - 2][amountOfParallels - 2];
 }
+
+float Statistic::chiDistributionValues(int amountOfdipersion) {
+	float criticalValues[30] = {5.024, 7.378, 9.348, 11.14, 12.83, 14.45, 16.01, 17.53, 19.02, 20.48, 21.92, 23.34, 24.74, 26.12, 27.49, 28.85, 30.19, 31.53, 32.85, 34.17, 35.48, 36.78, 38.08, 39.36, 40.65, 41.92, 43.19, 44.46, 45.72, 46.98};
+	return (amountOfdipersion < 2) && (amountOfdipersion > 31) ? 0 : criticalValues[amountOfdipersion - 2];
+}//[2;31] дисперсий
 
 Statistic::~Statistic() {
 }
