@@ -307,7 +307,7 @@ void Service::callMenu() {
 			} while (Statistic::cochranAndBartlettCriterionCalculate(fourDimArrayPtr, dispersionFourDimArrayPtr));
 
 			cout << endl << averageFourDimArrayPtr->getDescription() << endl;
-			averageFourDimArrayPtr->printFourDimArray();// print нужно изменить так чтобы выводились точки выпавшие по определённым критериям
+			averageFourDimArrayPtr->printFourDimArray();
 
 			cout << endl << dispersionFourDimArrayPtr->getDescription() << endl;
 			dispersionFourDimArrayPtr->printFourDimArray();

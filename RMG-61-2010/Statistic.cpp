@@ -248,6 +248,8 @@ bool Statistic::bartlettCriterionCalculate(FourDimArray * input, FourDimArray * 
 	float m = 0;
 	float c = 0;
 	float chi = 0;
+	float maxDispersion = 0;
+	int maxSession = 0;
 	int tmpAmountOfParallels = 0;
 	for (int s = 0; s < dispersion->getAmountOfSession(); s++) {
 		if ((dispersion->getFourDimArrayStatus(s, component, sampleName, 0) == 0) && (dispersion->getFourDimArrayExist(s, component, sampleName, 0))) {
@@ -255,6 +257,10 @@ bool Statistic::bartlettCriterionCalculate(FourDimArray * input, FourDimArray * 
 			sumOfDispersionLogarithm += (log(dispersion->getFourDimArrayConcentration(s, component, sampleName, 0)))*(input->getAmountOfParallel(s, component, sampleName) - 1);
 			sumOfReverseAmountOfParallels += (1 / (input->getAmountOfParallel(s, component, sampleName) - 1));
 			n += (input->getAmountOfParallel(s, component, sampleName) - 1);
+			if (dispersion->getFourDimArrayConcentration(s, component, sampleName, 0) > maxDispersion) {
+				maxDispersion = dispersion->getFourDimArrayConcentration(s, component, sampleName, 0);
+				maxSession = s;
+			}
 		}
 	}
 	averageDispersion /= n;
@@ -262,15 +268,14 @@ bool Statistic::bartlettCriterionCalculate(FourDimArray * input, FourDimArray * 
 	c = 1 + (1 / (3 * (dispersion->getAmountOfSession(component, sampleName) - 1)))*((sumOfReverseAmountOfParallels) - (1/n));
 	chi = m / c;
 
-	/*if (chi > chiDistributionValues(dispersion->getAmountOfSession(component, sampleName))) {
-		tmpAmountOfParallels = input->getAmountOfParallel(input->getAmountOfParallel(), component, sampleName);
+	if (chi > chiDistributionValues(dispersion->getAmountOfSession(component, sampleName))) {
+		tmpAmountOfParallels = input->getAmountOfParallel(maxSession, component, sampleName);
 		for (int p = 0; p < tmpAmountOfParallels; p++) {
-			input->setFourDimArrayStatus(maxDispersionSession, component, sampleName, p, 1);
+				input->setFourDimArrayStatus(maxSession, component, sampleName, p, 2);
 		}
 		return true;
-	}*/
+	}
 	return false;
-
 }
 
 float Statistic::cochranCriticalValues(int amountOfSessions, int amountOfParallels) {
