@@ -126,6 +126,18 @@ int FourDimArray::getAmountOfParallel(int session, int component, int sampleName
 	return parallelCounter;
 }
 
+int FourDimArray::getAmountOfParallel(int session, int component, int sampleName, string withoutSmth) {
+	int parallelCounter = 0;
+	for (int p = 0; p < getAmountOfParallel(); p++) {
+		if (withoutSmth == "withoutStatus") {
+			if (getFourDimArrayExist(session, component, sampleName, p)) {
+				parallelCounter++;
+			}
+		}
+	}
+	return parallelCounter;
+}
+
 string FourDimArray::getDescription() {
 	return description;
 }

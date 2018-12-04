@@ -17,6 +17,8 @@ public:
 	static bool arrayElementsAreEqual(int *array, int length);
 	static float cochranCriticalValues(int amountOfSessions, int amountOfParallels);
 	static float chiDistributionValues(int amountOfdipersion);
+	static FourDimArray * possibleOutlierReport(FourDimArray * input);
+	static int findOutlier(FourDimArray * input, int session, int component, int sampleName);
 	~Statistic();
 protected:
 

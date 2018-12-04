@@ -35,6 +35,8 @@ FourDimArray * Service::fourDimArrayUncertaintiesPtr = NULL;
 FourDimArray * Service::averageFourDimArrayPtr = NULL;
 FourDimArray * Service::biasFourDimArrayPtr = NULL;
 FourDimArray * Service::dispersionFourDimArrayPtr = NULL;
+FourDimArray * Service::possibleOutlierFourDimArrayPtr = NULL;
+
 
 
 Service::Service()
@@ -314,10 +316,18 @@ void Service::callMenu() {
 
 			cout << endl << biasFourDimArrayPtr->getDescription() << endl;
 			biasFourDimArrayPtr->printFourDimArray();
+
+			delete possibleOutlierFourDimArrayPtr;
+			possibleOutlierFourDimArrayPtr = NULL;
+			possibleOutlierFourDimArrayPtr = Statistic::possibleOutlierReport(fourDimArrayPtr);
+			possibleOutlierFourDimArrayPtr->setDescription("Possible outliers:");
+
+			cout << endl << possibleOutlierFourDimArrayPtr->getDescription() << endl;
+			possibleOutlierFourDimArrayPtr->printFourDimArray();
 			
 			break;
 		case 99:
-			if (Service::saveReport(fourDimArrayPtr, fourDimArrayConcentrationsPtr, fourDimArrayUncertaintiesPtr, averageFourDimArrayPtr, dispersionFourDimArrayPtr, biasFourDimArrayPtr, NULL)) {
+			if (Service::saveReport(fourDimArrayPtr, fourDimArrayConcentrationsPtr, fourDimArrayUncertaintiesPtr, averageFourDimArrayPtr, dispersionFourDimArrayPtr, biasFourDimArrayPtr, possibleOutlierFourDimArrayPtr, NULL)) {
 				cout << endl << "Report has been saved as report.csv" << endl;
 			}
 			else {

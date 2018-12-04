@@ -37,6 +37,8 @@ protected:
 	static FourDimArray *averageFourDimArrayPtr;
 	static FourDimArray *biasFourDimArrayPtr;
 	static FourDimArray *dispersionFourDimArrayPtr;
+	static FourDimArray *possibleOutlierFourDimArrayPtr;
+
 
 };
 #endif // !SERVICE_H

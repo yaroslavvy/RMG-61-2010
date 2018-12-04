@@ -295,5 +295,87 @@ float Statistic::chiDistributionValues(int amountOfdipersion) {
 	return (amountOfdipersion < 2) && (amountOfdipersion > 31) ? 0 : criticalValues[amountOfdipersion - 2];
 }//[2;31] дисперсий
 
+FourDimArray * Statistic::possibleOutlierReport(FourDimArray * input) {
+	int outlierCounter = 0;
+	int outlierparallel = 0;
+	string content = "";
+	for (int s = 0; s < input->getAmountOfSession(); s++) {
+		for (int c = 0; c < input->getAmountOfComponent(); c++) {
+			for (int sN = 0; sN < input->getAmountOfSampleName(); sN++) {
+				for (int p = 0; p < input->getAmountOfParallel(); p++) {
+					if (input->getFourDimArrayStatus(s, c, sN, p) != 0) {
+						p = input->getAmountOfParallel();
+						outlierCounter++;
+					}
+				}
+			}
+		}
+	}
+	FourDimArray *sPtr = NULL;
+	sPtr = new FourDimArray(1, 1, outlierCounter, 0);
+	sPtr->setStrComponent(0, "");
+	outlierCounter = 0;
+	for (int s = 0; s < input->getAmountOfSession(); s++) {
+		for (int c = 0; c < input->getAmountOfComponent(); c++) {
+			for (int sN = 0; sN < input->getAmountOfSampleName(); sN++) {
+				for (int p = 0; p < input->getAmountOfParallel(); p++) {
+					if ((input->getFourDimArrayStatus(s, c, sN, p) != 0) && (input->getAmountOfParallel(s, c, sN, "withoutStatus") > 2)) {
+						outlierparallel = Statistic::findOutlier(input, s, c, sN);
+						sPtr->setStrSampleName(outlierCounter, "Session №" + to_string(s + 1) + ", " + "sample: " + input->getStrSampleName(sN) + ", " + "component: " + input->getStrComponent(c) + ", " + "parallel №" + to_string(outlierparallel + 1) + ", concentration: " + to_string(input->getFourDimArrayConcentration(s, c, sN, outlierparallel)));
+						outlierCounter++;
+						p = input->getAmountOfParallel();
+					}
+					if ((input->getFourDimArrayStatus(s, c, sN, p) != 0) && (input->getAmountOfParallel(s, c, sN, "withoutStatus") == 2)) {
+						sPtr->setStrSampleName(outlierCounter, "Session №" + to_string(s + 1) + ", " + "sample: " + input->getStrSampleName(sN) + ", " + "component: " + input->getStrComponent(c) + ", " + "one among two parallels may be uncorrect, concentrations: " + to_string(input->getFourDimArrayConcentration(s, c, sN, 0)) + ", " + to_string(input->getFourDimArrayConcentration(s, c, sN, 1)));
+						outlierCounter++;
+						p = input->getAmountOfParallel();
+					}
+				}
+			}
+		}
+	}
+	return sPtr;
+}
+
+int Statistic::findOutlier(FourDimArray * input, int session, int component, int sampleName) {
+	float *arrayAverage = new float[input->getAmountOfParallel()];
+	float *arrayDispersion = new float[input->getAmountOfParallel()];
+	float totalSum = 0;
+	float totalSumSqr = 0;
+	int countOfParallels = 0;
+	float minDispersion = 0;
+	int minParalleldispersion = 0;
+	for (int exception = 0; exception < input->getAmountOfParallel(); exception++) {
+		for (int p = 0; p < input->getAmountOfParallel(); p++) {
+			if ((input->getFourDimArrayExist(session, component, sampleName, p)) && (input->getFourDimArrayVisible(session, component, sampleName, p)) && (exception != p)) {
+				totalSum += input->getFourDimArrayConcentration(session, component, sampleName, p);
+				countOfParallels++;
+			}
+		}
+		totalSum > 0 && countOfParallels > 0 ? arrayAverage[exception] = totalSum / countOfParallels : arrayAverage[exception] = 0;
+		totalSum = 0;
+		countOfParallels = 0;
+	}
+	for (int exception = 0; exception < input->getAmountOfParallel(); exception++) {
+		for (int p = 0; p < input->getAmountOfParallel(); p++) {
+			if ((input->getFourDimArrayExist(session, component, sampleName, p)) && (input->getFourDimArrayVisible(session, component, sampleName, p)) && (exception != p)) {
+				totalSumSqr += pow(abs(input->getFourDimArrayConcentration(session, component, sampleName, p) - arrayAverage[exception]), 2);
+				countOfParallels++;
+			}
+		}
+		totalSumSqr > 0 && countOfParallels > 1 ? arrayDispersion[exception] = totalSumSqr / (countOfParallels - 1) : arrayDispersion[exception] = 0;
+		totalSumSqr = 0;
+		countOfParallels = 0;
+	}
+
+	for (int i = 0; i < input->getAmountOfParallel(); i++) {
+		if (arrayDispersion[i] < minDispersion) {
+			minDispersion = arrayDispersion[i];
+			minParalleldispersion = i;
+		}
+	}
+	return minParalleldispersion;
+}
+
 Statistic::~Statistic() {
 }
