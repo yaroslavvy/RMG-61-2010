@@ -2,6 +2,7 @@
 #define STATISTIC_H
 
 #include "FourDimArray.h"
+#include "StructOneDimArray.h"
 
 class Statistic
 {

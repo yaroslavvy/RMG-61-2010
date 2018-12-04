@@ -396,9 +396,13 @@ void Service::writeOneFourDimArray(FourDimArray *fourDimArrayPtr, ofstream & fou
 					else {
 						if (fourDimArrayPtr->getFourDimArrayExist(s, c, sN, p) && (fourDimArrayPtr->getFourDimArrayStatus(s, c, sN, p) != 0)) {
 							switch (fourDimArrayPtr->getFourDimArrayStatus(s, c, sN, p)) {
-								case 1: fout << "Cochran";
+								case 1: fout << "Cochran(" << fourDimArrayPtr->getFourDimArrayConcentration(s, c, sN, p) << ")";
 									break;
-								case 2: fout << "Bartlett";
+								case 2: fout << "Bartlett(" << fourDimArrayPtr->getFourDimArrayConcentration(s, c, sN, p) << ")";
+									break;
+								case 10: fout << "Cochran*(" << fourDimArrayPtr->getFourDimArrayConcentration(s, c, sN, p) << ")";
+									break;
+								case 20: fout << "Bartlett*(" << fourDimArrayPtr->getFourDimArrayConcentration(s, c, sN, p) << ")";
 									break;
 								default:
 									break;

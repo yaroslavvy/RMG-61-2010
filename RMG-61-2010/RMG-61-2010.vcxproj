@@ -159,6 +159,7 @@
     <ClInclude Include="Service.h" />
     <ClInclude Include="Statistic.h" />
     <ClInclude Include="StructCell.h" />
+    <ClInclude Include="StructOneDimArray.h" />
     <ClInclude Include="StructureSessions.h" />
   </ItemGroup>
   <ItemGroup>

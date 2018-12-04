@@ -298,7 +298,9 @@ float Statistic::chiDistributionValues(int amountOfdipersion) {
 FourDimArray * Statistic::possibleOutlierReport(FourDimArray * input) {
 	int outlierCounter = 0;
 	int outlierparallel = 0;
+	int outlierStatus = 0;
 	string content = "";
+	string criterion = "";
 	for (int s = 0; s < input->getAmountOfSession(); s++) {
 		for (int c = 0; c < input->getAmountOfComponent(); c++) {
 			for (int sN = 0; sN < input->getAmountOfSampleName(); sN++) {
@@ -319,14 +321,24 @@ FourDimArray * Statistic::possibleOutlierReport(FourDimArray * input) {
 		for (int c = 0; c < input->getAmountOfComponent(); c++) {
 			for (int sN = 0; sN < input->getAmountOfSampleName(); sN++) {
 				for (int p = 0; p < input->getAmountOfParallel(); p++) {
+					if ((input->getFourDimArrayStatus(s, c, sN, p) == 1) || (input->getFourDimArrayStatus(s, c, sN, p) == 10)) {
+						criterion = ", Criterion: Cochran";
+						outlierStatus = 10;
+					}
+					if ((input->getFourDimArrayStatus(s, c, sN, p) == 2) || (input->getFourDimArrayStatus(s, c, sN, p) == 20)) {
+						criterion = ", Criterion: Bartlett";
+						outlierStatus = 20;
+					}
 					if ((input->getFourDimArrayStatus(s, c, sN, p) != 0) && (input->getAmountOfParallel(s, c, sN, "withoutStatus") > 2)) {
 						outlierparallel = Statistic::findOutlier(input, s, c, sN);
-						sPtr->setStrSampleName(outlierCounter, "Session ¹" + to_string(s + 1) + ", " + "sample: " + input->getStrSampleName(sN) + ", " + "component: " + input->getStrComponent(c) + ", " + "parallel ¹" + to_string(outlierparallel + 1) + ", concentration: " + to_string(input->getFourDimArrayConcentration(s, c, sN, outlierparallel)));
+						sPtr->setStrSampleName(outlierCounter, "Session ¹" + to_string(s + 1) + ", " + "sample: " + input->getStrSampleName(sN) + ", " + "component: " + input->getStrComponent(c) + ", " + "parallel ¹" + to_string(outlierparallel + 1) + ", concentration: " + to_string(input->getFourDimArrayConcentration(s, c, sN, outlierparallel)) + criterion );
+						input->setFourDimArrayStatus(s, c, sN, outlierparallel, outlierStatus);
 						outlierCounter++;
 						p = input->getAmountOfParallel();
 					}
 					if ((input->getFourDimArrayStatus(s, c, sN, p) != 0) && (input->getAmountOfParallel(s, c, sN, "withoutStatus") == 2)) {
-						sPtr->setStrSampleName(outlierCounter, "Session ¹" + to_string(s + 1) + ", " + "sample: " + input->getStrSampleName(sN) + ", " + "component: " + input->getStrComponent(c) + ", " + "one among two parallels may be uncorrect, concentrations: " + to_string(input->getFourDimArrayConcentration(s, c, sN, 0)) + ", " + to_string(input->getFourDimArrayConcentration(s, c, sN, 1)));
+						sPtr->setStrSampleName(outlierCounter, "Session ¹" + to_string(s + 1) + ", " + "sample: " + input->getStrSampleName(sN) + ", " + "component: " + input->getStrComponent(c) + ", " + "one among two parallels may be uncorrect, concentrations: " + to_string(input->getFourDimArrayConcentration(s, c, sN, 0)) + ", " + to_string(input->getFourDimArrayConcentration(s, c, sN, 1)) + criterion);
+						input->setFourDimArrayStatus(s, c, sN, outlierparallel, outlierStatus);
 						outlierCounter++;
 						p = input->getAmountOfParallel();
 					}
@@ -339,7 +351,7 @@ FourDimArray * Statistic::possibleOutlierReport(FourDimArray * input) {
 
 int Statistic::findOutlier(FourDimArray * input, int session, int component, int sampleName) {
 	float *arrayAverage = new float[input->getAmountOfParallel()];
-	float *arrayDispersion = new float[input->getAmountOfParallel()];
+	OneDimArray *arrayDispersion = new OneDimArray[input->getAmountOfParallel()];
 	float totalSum = 0;
 	float totalSumSqr = 0;
 	int countOfParallels = 0;
@@ -363,14 +375,26 @@ int Statistic::findOutlier(FourDimArray * input, int session, int component, int
 				countOfParallels++;
 			}
 		}
-		totalSumSqr > 0 && countOfParallels > 1 ? arrayDispersion[exception] = totalSumSqr / (countOfParallels - 1) : arrayDispersion[exception] = 0;
+		if (countOfParallels > 1) {
+			arrayDispersion[exception].value = totalSumSqr / (countOfParallels - 1);
+			arrayDispersion[exception].isChanged = true;
+		}
+		else {
+			arrayDispersion[exception].value = 0;
+			arrayDispersion[exception].isChanged = false;
+		} 
 		totalSumSqr = 0;
 		countOfParallels = 0;
 	}
-
 	for (int i = 0; i < input->getAmountOfParallel(); i++) {
-		if (arrayDispersion[i] < minDispersion) {
-			minDispersion = arrayDispersion[i];
+		if (arrayDispersion[i].isChanged) {
+			minDispersion = arrayDispersion[i].value;
+			i = input->getAmountOfParallel();
+		}
+	}
+	for (int i = 0; i < input->getAmountOfParallel(); i++) {
+		if ((arrayDispersion[i].value < minDispersion) && (arrayDispersion[i].isChanged)) {
+			minDispersion = arrayDispersion[i].value;
 			minParalleldispersion = i;
 		}
 	}
