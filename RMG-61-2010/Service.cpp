@@ -36,7 +36,14 @@ FourDimArray * Service::averageFourDimArrayPtr = NULL;
 FourDimArray * Service::biasFourDimArrayPtr = NULL;
 FourDimArray * Service::dispersionFourDimArrayPtr = NULL;
 FourDimArray * Service::possibleOutlierFourDimArrayPtr = NULL;
+FourDimArray * Service::repeatabilityFourDimArrayPtr = NULL;
+FourDimArray * Service::repeatabilityLimitFourDimArrayPtr = NULL;
 
+FourDimArray * Service::fourDimArrayGrubbsCriterionPtr = NULL;
+FourDimArray * Service::averageFourDimArrayGrubbsCriterionPtr = NULL;
+FourDimArray * Service::biasFourDimArrayGrubbsCriterionPtr = NULL;
+
+int Service::amountOfParallelsInTestResult = 0;
 
 
 Service::Service()
@@ -221,17 +228,25 @@ void Service::callMenu() {
 			delete startPtr;
 			startPtr = NULL;
 
-			while (tmp <= intAnswerDialogMenu) {
+			/*while (tmp <= intAnswerDialogMenu) {
 				cout << endl << tmp << numberEnding(tmp) << " session data:" << endl;
 				(*(arrayOfSessions->sessionDataTablesArray + tmp - 1))->printDataTable();
 				tmp++;
-			}
+			}*/
 
-			cout << endl << "Concentrations of CRMs:" << endl;
+			do {
+				cout << endl << "Input amount of parallel values (observed values) which will be included in test result? (1-5)" << endl;
+				cin >> amountOfParallelsInTestResult;
+				if ((amountOfParallelsInTestResult < 1) || (amountOfParallelsInTestResult > 5)) {
+					cout << endl << "Incorrect value. Input please value from 1 to 5" << endl;
+				}
+			} while ((amountOfParallelsInTestResult < 1) || (amountOfParallelsInTestResult > 5));
+
+			/*cout << endl << "Concentrations of CRMs:" << endl;
 			arrayOfSessions->crmConcentraions->printDataTable();
 
 			cout << endl << "Uncertainties of CRM's concentrations:" << endl;
-			arrayOfSessions->crmUncertainties->printDataTable();
+			arrayOfSessions->crmUncertainties->printDataTable();*/
 			
 			break;
 		case 11:
@@ -259,14 +274,14 @@ void Service::callMenu() {
 			fourDimArrayUncertaintiesPtr->pasteValuesInCopyFormat(fourDimArrayPtr, arrayOfSessions->crmUncertainties, fourDimArrayConcentrationsPtr);
 			fourDimArrayUncertaintiesPtr->setDescription("Uncertainties of CRM's concentrations");
 
-			cout << endl << fourDimArrayPtr->getDescription() << ":" << endl;
+			/*cout << endl << fourDimArrayPtr->getDescription() << ":" << endl;
 			fourDimArrayPtr->printFourDimArray();
 
 			cout << endl << fourDimArrayConcentrationsPtr->getDescription() << ":" << endl;
 			fourDimArrayConcentrationsPtr->printFourDimArray();
 
 			cout << endl << fourDimArrayUncertaintiesPtr->getDescription() << ":" << endl;
-			fourDimArrayUncertaintiesPtr->printFourDimArray();
+			fourDimArrayUncertaintiesPtr->printFourDimArray();*/
 			break;
 		case 13:
 			do {
@@ -308,26 +323,79 @@ void Service::callMenu() {
 
 			} while (Statistic::cochranAndBartlettCriterionCalculate(fourDimArrayPtr, dispersionFourDimArrayPtr));
 
-			cout << endl << averageFourDimArrayPtr->getDescription() << endl;
+			/*cout << endl << averageFourDimArrayPtr->getDescription() << endl;
 			averageFourDimArrayPtr->printFourDimArray();
 
 			cout << endl << dispersionFourDimArrayPtr->getDescription() << endl;
 			dispersionFourDimArrayPtr->printFourDimArray();
 
 			cout << endl << biasFourDimArrayPtr->getDescription() << endl;
-			biasFourDimArrayPtr->printFourDimArray();
+			biasFourDimArrayPtr->printFourDimArray();*/
 
 			delete possibleOutlierFourDimArrayPtr;
 			possibleOutlierFourDimArrayPtr = NULL;
 			possibleOutlierFourDimArrayPtr = Statistic::possibleOutlierReport(fourDimArrayPtr);
-			possibleOutlierFourDimArrayPtr->setDescription("Possible outliers:");
+			possibleOutlierFourDimArrayPtr->setDescription("Possible outliers among dispersions");
 
-			cout << endl << possibleOutlierFourDimArrayPtr->getDescription() << endl;
-			possibleOutlierFourDimArrayPtr->printFourDimArray();
+			/*cout << endl << possibleOutlierFourDimArrayPtr->getDescription() << endl;
+			possibleOutlierFourDimArrayPtr->printFourDimArray();*/
+
+			delete repeatabilityFourDimArrayPtr;
+			repeatabilityFourDimArrayPtr = NULL;
+			repeatabilityFourDimArrayPtr = Statistic::repeatabilityCalculate(dispersionFourDimArrayPtr);
+			repeatabilityFourDimArrayPtr->setDescription("Repeatability");
+
+			/*cout << endl << repeatabilityFourDimArrayPtr->getDescription() << endl;
+			repeatabilityFourDimArrayPtr->printFourDimArray();*/
 			
+			if (isPtrNull(repeatabilityFourDimArrayPtr)) {
+				cout << "repeatabilityFourDimArrayPtr is empty" << endl;
+				break;
+			}
+
+			delete repeatabilityLimitFourDimArrayPtr;
+			repeatabilityLimitFourDimArrayPtr = NULL;
+			repeatabilityLimitFourDimArrayPtr = Statistic::repeatabilityLimitCalculate(repeatabilityFourDimArrayPtr, amountOfParallelsInTestResult);
+			repeatabilityLimitFourDimArrayPtr->setDescription("Repeatability limit with " + std::to_string(amountOfParallelsInTestResult) + (amountOfParallelsInTestResult == 1 ? " parallel value" : " parallel values"));
+
+			fourDimArrayPtr->copyFourDimArray(fourDimArrayGrubbsCriterionPtr);
+			averageFourDimArrayPtr->copyFourDimArray(averageFourDimArrayGrubbsCriterionPtr);
+			biasFourDimArrayPtr->copyFourDimArray(biasFourDimArrayGrubbsCriterionPtr);
+			
+			/*while (Statistic::grubbsCriterionCalculate(fourDimArrayPtr, averageFourDimArrayPtr)) {
+				
+				if (isPtrNull(fourDimArrayPtr)) {
+					cout << "fourDimArray is empty" << endl;
+					break;
+				}
+
+
+				averageFourDimArrayPtr->setDescription("Average values ");
+
+				delete averageFourDimArrayPtr;
+				averageFourDimArrayPtr = NULL;
+				averageFourDimArrayPtr = Statistic::averageCalculate(fourDimArrayPtr);
+				averageFourDimArrayPtr->setDescription("Average values ");
+
+				if (isPtrNull(averageFourDimArrayPtr)) {
+					cout << "averageFourDimArrayPtr is empty" << endl;
+					break;
+				}
+				
+				delete biasFourDimArrayPtr;
+				biasFourDimArrayPtr = NULL;
+				biasFourDimArrayPtr = Statistic::biasCalculate(averageFourDimArrayPtr, fourDimArrayConcentrationsPtr);
+				biasFourDimArrayPtr->setDescription("Bias values");
+
+				if (isPtrNull(biasFourDimArrayPtr)) {
+					cout << "biasFourDimArrayPtr is empty" << endl;
+					break;
+				}
+			}*/
+
 			break;
 		case 99:
-			if (Service::saveReport(fourDimArrayPtr, fourDimArrayConcentrationsPtr, fourDimArrayUncertaintiesPtr, averageFourDimArrayPtr, dispersionFourDimArrayPtr, biasFourDimArrayPtr, possibleOutlierFourDimArrayPtr, NULL)) {
+			if (Service::saveReport(fourDimArrayPtr, fourDimArrayConcentrationsPtr, fourDimArrayUncertaintiesPtr, averageFourDimArrayPtr, dispersionFourDimArrayPtr, biasFourDimArrayPtr, possibleOutlierFourDimArrayPtr, repeatabilityFourDimArrayPtr, repeatabilityLimitFourDimArrayPtr, NULL)) {
 				cout << endl << "Report has been saved as report.csv" << endl;
 			}
 			else {
@@ -404,6 +472,7 @@ void Service::writeOneFourDimArray(FourDimArray *fourDimArrayPtr, ofstream & fou
 									break;
 								case 20: fout << "Bartlett*(" << fourDimArrayPtr->getFourDimArrayConcentration(s, c, sN, p) << ")";
 									break;
+								case 3: fout << "1 parallel";
 								default:
 									break;
 							}

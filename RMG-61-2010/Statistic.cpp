@@ -401,5 +401,75 @@ int Statistic::findOutlier(FourDimArray * input, int session, int component, int
 	return minParalleldispersion;
 }
 
+FourDimArray * Statistic::repeatabilityCalculate(FourDimArray * dispersion) {
+	
+	float totalSumOfDispersion = 0;
+	int dispersionCounter = 0;
+
+	FourDimArray *sPtr = NULL;
+	sPtr = new FourDimArray(1, dispersion->getAmountOfComponent(), dispersion->getAmountOfSampleName(), 1);
+
+	for (int c = 0; c < dispersion->getAmountOfComponent(); c++) {
+		sPtr->setStrComponent(c, (dispersion->getStrComponent(c)));
+	}
+
+	for (int sN = 0; sN < dispersion->getAmountOfSampleName(); sN++) {
+		sPtr->setStrSampleName(sN, (dispersion->getStrSampleName(sN)));
+	}
+
+	for (int c = 0; c < dispersion->getAmountOfComponent(); c++) {
+		for (int sN = 0; sN < dispersion->getAmountOfSampleName(); sN++) {
+			totalSumOfDispersion = 0;
+			dispersionCounter = 0;
+			for (int s = 0; s < dispersion->getAmountOfSession(); s++) {
+				if ((dispersion->getFourDimArrayVisible(s, c, sN, 0)) && (dispersion->getFourDimArrayExist(s, c, sN, 0)) && (dispersion->getFourDimArrayStatus(s, c, sN, 0) == 0)) {
+						totalSumOfDispersion += dispersion->getFourDimArrayConcentration(s, c, sN, 0);
+						dispersionCounter++;
+				}
+			}
+			if ((dispersionCounter > 0) && (totalSumOfDispersion >= 0)) {
+				sPtr->setFourDimArrayConcentration(0, c, sN, 0, sqrt(totalSumOfDispersion / dispersionCounter));
+				sPtr->setFourDimArrayExist(0, c, sN, 0, true);
+			}
+		}
+	}
+	return sPtr;
+}
+
+FourDimArray * Statistic::repeatabilityLimitCalculate(FourDimArray * repeatability, int amountOfParallelsInTestResult) {
+
+	float qTable[4] = { 2.77, 3.31, 3.63, 3.86 };
+
+	FourDimArray *sPtr = NULL;
+	sPtr = new FourDimArray(1, repeatability->getAmountOfComponent(), repeatability->getAmountOfSampleName(), 1);
+
+	for (int c = 0; c < repeatability->getAmountOfComponent(); c++) {
+		sPtr->setStrComponent(c, (repeatability->getStrComponent(c)));
+	}
+
+	for (int sN = 0; sN < repeatability->getAmountOfSampleName(); sN++) {
+		sPtr->setStrSampleName(sN, (repeatability->getStrSampleName(sN)));
+	}
+
+	for (int c = 0; c < repeatability->getAmountOfComponent(); c++) {
+		for (int sN = 0; sN < repeatability->getAmountOfSampleName(); sN++) {
+			if ((repeatability->getFourDimArrayVisible(0, c, sN, 0)) && (repeatability->getFourDimArrayExist(0, c, sN, 0)) && (repeatability->getFourDimArrayStatus(0, c, sN, 0) == 0) && (amountOfParallelsInTestResult > 0) && (amountOfParallelsInTestResult <= 5)){
+				if (amountOfParallelsInTestResult > 1) {
+					sPtr->setFourDimArrayConcentration(0, c, sN, 0, ((repeatability->getFourDimArrayConcentration(0, c, sN, 0)) * qTable[amountOfParallelsInTestResult - 2]));
+				}
+				else {
+					sPtr->setFourDimArrayStatus(0, c, sN, 0, 3);
+				}
+				sPtr->setFourDimArrayExist(0, c, sN, 0, true);
+			}
+		}
+	}
+	return sPtr;
+}
+
+bool Statistic::grubbsCriterionCalculate(FourDimArray * input, FourDimArray * average) {
+	return false;
+}
+
 Statistic::~Statistic() {
 }

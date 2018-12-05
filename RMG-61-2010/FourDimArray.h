@@ -25,6 +25,8 @@ public:
 
 	static FourDimArray * extractDataFromTableToFourDimArray(struct sessions * arrayOfSessions);
 
+	void copyFourDimArray(FourDimArray * nullPtr);
+
 	void printFourDimArray();
 
 	void setFourDimArrayConcentration(int session, int component, int sampleName, int parallel, float concentration);

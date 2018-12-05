@@ -297,6 +297,33 @@ FourDimArray * FourDimArray::extractDataFromTableToFourDimArray(struct sessions 
 	return sPtr;
 }
 
+void FourDimArray::copyFourDimArray(FourDimArray * sPtr) {
+	 sPtr = new FourDimArray(getAmountOfSession(), getAmountOfComponent(), getAmountOfSampleName(), getAmountOfParallel());
+	 
+	 for (int i = 0; i < getAmountOfComponent(); i++) {
+		 sPtr->setStrComponent(i, getStrComponent(i));
+	 }
+
+	 for (int j = 0; j < getAmountOfSampleName(); j++) {
+		 sPtr->setStrSampleName(j, this->getStrSampleName(j));
+	 }
+	 
+	 for (int s = 0; s < getAmountOfSession(); s++) {
+		 for (int c = 0; c < getAmountOfComponent(); c++) {
+			 for (int sN = 0; sN < getAmountOfSampleName(); sN++) {
+				 for (int p = 0; p < getAmountOfParallel(); p++) {
+					 sPtr->setFourDimArrayConcentration(s, c, sN, p, getFourDimArrayConcentration(s, c, sN, p));
+					 sPtr->setFourDimArrayStatus(s, c, sN, p, getFourDimArrayStatus(s, c, sN, p));
+					 sPtr->setFourDimArrayVisible(s, c, sN, p, getFourDimArrayVisible(s, c, sN, p));
+					 sPtr->setFourDimArrayExist(s, c, sN, p, getFourDimArrayExist(s, c, sN, p));
+				 }
+			 }
+		 }
+	 }
+	
+	
+	return;
+}
 
 void FourDimArray::printFourDimArray() {
 	for (int s = 0; s < getAmountOfSession(); s++) {

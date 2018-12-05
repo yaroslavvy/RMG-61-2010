@@ -20,6 +20,9 @@ public:
 	static float chiDistributionValues(int amountOfdipersion);
 	static FourDimArray * possibleOutlierReport(FourDimArray * input);
 	static int findOutlier(FourDimArray * input, int session, int component, int sampleName);
+	static FourDimArray * repeatabilityCalculate(FourDimArray * dispersion);
+	static FourDimArray * repeatabilityLimitCalculate(FourDimArray * repeatability, int amountOfParallelsInTestResult);
+	static bool grubbsCriterionCalculate(FourDimArray * input, FourDimArray * average);
 	~Statistic();
 protected:
 

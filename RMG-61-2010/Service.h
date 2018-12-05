@@ -38,7 +38,12 @@ protected:
 	static FourDimArray *biasFourDimArrayPtr;
 	static FourDimArray *dispersionFourDimArrayPtr;
 	static FourDimArray *possibleOutlierFourDimArrayPtr;
-
+	static FourDimArray *repeatabilityFourDimArrayPtr;
+	static FourDimArray *repeatabilityLimitFourDimArrayPtr;
+	static int amountOfParallelsInTestResult;
+	static FourDimArray * fourDimArrayGrubbsCriterionPtr;
+	static FourDimArray * averageFourDimArrayGrubbsCriterionPtr;
+	static FourDimArray * biasFourDimArrayGrubbsCriterionPtr;
 
 };
 #endif // !SERVICE_H
