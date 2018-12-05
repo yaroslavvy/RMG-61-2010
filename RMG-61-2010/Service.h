@@ -35,7 +35,6 @@ protected:
 	static FourDimArray *fourDimArrayConcentrationsPtr;
 	static FourDimArray *fourDimArrayUncertaintiesPtr;
 	static FourDimArray *averageFourDimArrayPtr;
-	static FourDimArray *biasFourDimArrayPtr;
 	static FourDimArray *dispersionFourDimArrayPtr;
 	static FourDimArray *possibleOutlierFourDimArrayPtr;
 	static FourDimArray *repeatabilityFourDimArrayPtr;

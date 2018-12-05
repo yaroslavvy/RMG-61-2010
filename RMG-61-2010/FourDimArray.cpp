@@ -305,9 +305,11 @@ void FourDimArray::copyFourDimArray(FourDimArray * sPtr) {
 	 }
 
 	 for (int j = 0; j < getAmountOfSampleName(); j++) {
-		 sPtr->setStrSampleName(j, this->getStrSampleName(j));
+		 sPtr->setStrSampleName(j, getStrSampleName(j));
 	 }
 	 
+	 sPtr->setDescription(getDescription());
+
 	 for (int s = 0; s < getAmountOfSession(); s++) {
 		 for (int c = 0; c < getAmountOfComponent(); c++) {
 			 for (int sN = 0; sN < getAmountOfSampleName(); sN++) {
@@ -320,8 +322,6 @@ void FourDimArray::copyFourDimArray(FourDimArray * sPtr) {
 			 }
 		 }
 	 }
-	
-	
 	return;
 }
 

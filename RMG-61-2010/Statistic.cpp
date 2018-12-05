@@ -42,12 +42,8 @@ FourDimArray * Statistic::averageCalculate(FourDimArray * input) {
 				total = 0;
 				parallelCounter = 0;
 				for (int p = 0; p < input->getAmountOfParallel(); p++) {
-					if ((input->getFourDimArrayStatus(s, c, sN, p) != 0) && (input->getFourDimArrayVisible(s, c, sN, p)) && (input->getFourDimArrayExist(s, c, sN, p))) {
+					if ((input->getFourDimArrayVisible(s, c, sN, p)) && (input->getFourDimArrayExist(s, c, sN, p))) {
 						sPtr->setFourDimArrayStatus(s, c, sN, 0, input->getFourDimArrayStatus(s, c, sN, p));
-						sPtr->setFourDimArrayExist(s, c, sN, 0, true);
-						p = input->getAmountOfParallel();
-					}
-					if ((input->getFourDimArrayStatus(s, c, sN, p) == 0) && (input->getFourDimArrayVisible(s, c, sN, p)) && (input->getFourDimArrayExist(s, c, sN, p))) {
 						total += input->getFourDimArrayConcentration(s, c, sN, p);
 						parallelCounter++;
 					}
@@ -77,13 +73,9 @@ FourDimArray * Statistic::biasCalculate(FourDimArray * average, FourDimArray * c
 	for (int s = 0; s < average->getAmountOfSession(); s++) {
 		for (int c = 0; c < average->getAmountOfComponent(); c++) {
 			for (int sN = 0; sN < average->getAmountOfSampleName(); sN++) {
-				if ((average->getFourDimArrayVisible(s, c, sN, 0)) && (average->getFourDimArrayExist(s, c, sN, 0)) && (concentrations->getFourDimArrayStatus(0, c, sN, 0) == 0) && (concentrations->getFourDimArrayVisible(0, c, sN, 0)) && (concentrations->getFourDimArrayExist(0, c, sN, 0))) {
-					if ((average->getFourDimArrayStatus(s, c, sN, 0) == 0)) {
-						sPtr->setFourDimArrayConcentration(s, c, sN, 0, (average->getFourDimArrayConcentration(s, c, sN, 0) - concentrations->getFourDimArrayConcentration(0, c, sN, 0)));
-					}
-					else {
-						sPtr->setFourDimArrayStatus(s, c, sN, 0, (average->getFourDimArrayStatus(s, c, sN, 0)));
-					}
+				if ((average->getFourDimArrayVisible(s, c, sN, 0)) && (average->getFourDimArrayExist(s, c, sN, 0)) && (concentrations->getFourDimArrayVisible(0, c, sN, 0)) && (concentrations->getFourDimArrayExist(0, c, sN, 0))) {
+					sPtr->setFourDimArrayConcentration(s, c, sN, 0, (average->getFourDimArrayConcentration(s, c, sN, 0) - concentrations->getFourDimArrayConcentration(0, c, sN, 0)));
+					sPtr->setFourDimArrayStatus(s, c, sN, 0, (average->getFourDimArrayStatus(s, c, sN, 0)));
 					sPtr->setFourDimArrayExist(s, c, sN, 0, true);
 				}
 			}
@@ -112,17 +104,14 @@ FourDimArray * Statistic::dispersionCalculate(FourDimArray * input, FourDimArray
 	for (int s = 0; s < input->getAmountOfSession(); s++) {
 		for (int c = 0; c < input->getAmountOfComponent(); c++) {
 			for (int sN = 0; sN < input->getAmountOfSampleName(); sN++) {
-				if ((average->getFourDimArrayStatus(s, c, sN, 0) != 0) && (average->getFourDimArrayVisible(s, c, sN, 0)) && (average->getFourDimArrayExist(s, c, sN, 0))) {
+				if ((average->getFourDimArrayVisible(s, c, sN, 0)) && (average->getFourDimArrayExist(s, c, sN, 0))) {
 					sPtr->setFourDimArrayStatus(s, c, sN, 0, (average->getFourDimArrayStatus(s, c, sN, 0)));
-					sPtr->setFourDimArrayExist(s, c, sN, 0, true);
-				}
-				else {
 					parallelCounter = 0;
 					totalSumOfSqr = 0;
 					isEqual = 0;
 					equalFlag = true;
 					for (int p = 0; p < input->getAmountOfParallel(); p++) {
-						if ((input->getFourDimArrayStatus(s, c, sN, p) == 0) && (input->getFourDimArrayVisible(s, c, sN, p)) && (input->getFourDimArrayExist(s, c, sN, p)) && (average->getFourDimArrayStatus(s, c, sN, 0) == 0) && (average->getFourDimArrayVisible(s, c, sN, 0)) && (average->getFourDimArrayExist(s, c, sN, 0))) {
+						if ((input->getFourDimArrayVisible(s, c, sN, p)) && (input->getFourDimArrayExist(s, c, sN, p))) {
 							if ((p != 0) && (equalFlag)) {
 								if (isEqual != input->getFourDimArrayConcentration(s, c, sN, p)) {
 									equalFlag = false;
@@ -468,6 +457,7 @@ FourDimArray * Statistic::repeatabilityLimitCalculate(FourDimArray * repeatabili
 }
 
 bool Statistic::grubbsCriterionCalculate(FourDimArray * input, FourDimArray * average) {
+
 	return false;
 }
 

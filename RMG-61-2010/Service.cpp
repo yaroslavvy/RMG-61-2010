@@ -33,7 +33,6 @@ FourDimArray * Service::fourDimArrayPtr = NULL;
 FourDimArray * Service::fourDimArrayConcentrationsPtr = NULL;
 FourDimArray * Service::fourDimArrayUncertaintiesPtr = NULL;
 FourDimArray * Service::averageFourDimArrayPtr = NULL;
-FourDimArray * Service::biasFourDimArrayPtr = NULL;
 FourDimArray * Service::dispersionFourDimArrayPtr = NULL;
 FourDimArray * Service::possibleOutlierFourDimArrayPtr = NULL;
 FourDimArray * Service::repeatabilityFourDimArrayPtr = NULL;
@@ -303,19 +302,6 @@ void Service::callMenu() {
 				dispersionFourDimArrayPtr = Statistic::dispersionCalculate(fourDimArrayPtr, averageFourDimArrayPtr);
 				dispersionFourDimArrayPtr->setDescription("Dispersion values");
 				
-				if (isPtrNull(fourDimArrayConcentrationsPtr)) {
-					cout << "fourDimArrayConcentrationsPtr is empty" << endl;
-					break;
-				}
-				delete biasFourDimArrayPtr;
-				biasFourDimArrayPtr = NULL;
-				biasFourDimArrayPtr = Statistic::biasCalculate(averageFourDimArrayPtr, fourDimArrayConcentrationsPtr);
-				biasFourDimArrayPtr->setDescription("Bias values");
-				
-				if (isPtrNull(biasFourDimArrayPtr)) {
-					cout << "biasFourDimArrayPtr is empty" << endl;
-					break;
-				}
 				if (isPtrNull(dispersionFourDimArrayPtr)) {
 					cout << "dispersionFourDimArrayPtr is empty" << endl;
 					break;
@@ -327,10 +313,7 @@ void Service::callMenu() {
 			averageFourDimArrayPtr->printFourDimArray();
 
 			cout << endl << dispersionFourDimArrayPtr->getDescription() << endl;
-			dispersionFourDimArrayPtr->printFourDimArray();
-
-			cout << endl << biasFourDimArrayPtr->getDescription() << endl;
-			biasFourDimArrayPtr->printFourDimArray();*/
+			dispersionFourDimArrayPtr->printFourDimArray();*/
 
 			delete possibleOutlierFourDimArrayPtr;
 			possibleOutlierFourDimArrayPtr = NULL;
@@ -358,44 +341,42 @@ void Service::callMenu() {
 			repeatabilityLimitFourDimArrayPtr = Statistic::repeatabilityLimitCalculate(repeatabilityFourDimArrayPtr, amountOfParallelsInTestResult);
 			repeatabilityLimitFourDimArrayPtr->setDescription("Repeatability limit with " + std::to_string(amountOfParallelsInTestResult) + (amountOfParallelsInTestResult == 1 ? " parallel value" : " parallel values"));
 
-			fourDimArrayPtr->copyFourDimArray(fourDimArrayGrubbsCriterionPtr);
+			fourDimArrayPtr->copyFourDimArray(fourDimArrayGrubbsCriterionPtr);// некорректная работа функции
+			/*fourDimArrayGrubbsCriterionPtr->setDescription("Common formated data with Grubbs criterion");
 			averageFourDimArrayPtr->copyFourDimArray(averageFourDimArrayGrubbsCriterionPtr);
-			biasFourDimArrayPtr->copyFourDimArray(biasFourDimArrayGrubbsCriterionPtr);
+			averageFourDimArrayGrubbsCriterionPtr->setDescription("Average values with Grubbs criterion");
 			
-			/*while (Statistic::grubbsCriterionCalculate(fourDimArrayPtr, averageFourDimArrayPtr)) {
+			while (Statistic::grubbsCriterionCalculate(fourDimArrayGrubbsCriterionPtr, averageFourDimArrayGrubbsCriterionPtr)) {
 				
-				if (isPtrNull(fourDimArrayPtr)) {
-					cout << "fourDimArray is empty" << endl;
-					break;
-				}
-
-
-				averageFourDimArrayPtr->setDescription("Average values ");
-
-				delete averageFourDimArrayPtr;
-				averageFourDimArrayPtr = NULL;
-				averageFourDimArrayPtr = Statistic::averageCalculate(fourDimArrayPtr);
-				averageFourDimArrayPtr->setDescription("Average values ");
-
-				if (isPtrNull(averageFourDimArrayPtr)) {
-					cout << "averageFourDimArrayPtr is empty" << endl;
+				if (isPtrNull(fourDimArrayGrubbsCriterionPtr)) {
+					cout << "fourDimArrayGrubbsCriterionPtr is empty" << endl;
 					break;
 				}
 				
-				delete biasFourDimArrayPtr;
-				biasFourDimArrayPtr = NULL;
-				biasFourDimArrayPtr = Statistic::biasCalculate(averageFourDimArrayPtr, fourDimArrayConcentrationsPtr);
-				biasFourDimArrayPtr->setDescription("Bias values");
+				delete averageFourDimArrayGrubbsCriterionPtr;
+				averageFourDimArrayGrubbsCriterionPtr = NULL;
+				averageFourDimArrayGrubbsCriterionPtr = Statistic::averageCalculate(fourDimArrayGrubbsCriterionPtr);
+				//averageFourDimArrayGrubbsCriterionPtr->setDescription("Average values with Grubbs criterion");
 
-				if (isPtrNull(biasFourDimArrayPtr)) {
-					cout << "biasFourDimArrayPtr is empty" << endl;
+				if (isPtrNull(averageFourDimArrayGrubbsCriterionPtr)) {
+					cout << "averageFourDimArrayGrubbsCriterionPtr is empty" << endl;
 					break;
 				}
+			}
+
+			delete biasFourDimArrayGrubbsCriterionPtr;
+			biasFourDimArrayGrubbsCriterionPtr = NULL;
+			biasFourDimArrayGrubbsCriterionPtr = Statistic::biasCalculate(averageFourDimArrayGrubbsCriterionPtr, fourDimArrayConcentrationsPtr);
+			//biasFourDimArrayGrubbsCriterionPtr->setDescription("Bias values with Grubbs criterion");
+
+			if (isPtrNull(biasFourDimArrayGrubbsCriterionPtr)) {
+				cout << "biasFourDimArrayGrubbsCriterionPtr is empty" << endl;
+				break;
 			}*/
 
 			break;
 		case 99:
-			if (Service::saveReport(fourDimArrayPtr, fourDimArrayConcentrationsPtr, fourDimArrayUncertaintiesPtr, averageFourDimArrayPtr, dispersionFourDimArrayPtr, biasFourDimArrayPtr, possibleOutlierFourDimArrayPtr, repeatabilityFourDimArrayPtr, repeatabilityLimitFourDimArrayPtr, NULL)) {
+			if (Service::saveReport(fourDimArrayPtr, fourDimArrayConcentrationsPtr, fourDimArrayUncertaintiesPtr, averageFourDimArrayPtr, dispersionFourDimArrayPtr, possibleOutlierFourDimArrayPtr, repeatabilityFourDimArrayPtr, repeatabilityLimitFourDimArrayPtr, fourDimArrayGrubbsCriterionPtr, averageFourDimArrayGrubbsCriterionPtr, biasFourDimArrayGrubbsCriterionPtr, NULL)) {
 				cout << endl << "Report has been saved as report.csv" << endl;
 			}
 			else {
@@ -473,6 +454,11 @@ void Service::writeOneFourDimArray(FourDimArray *fourDimArrayPtr, ofstream & fou
 								case 20: fout << "Bartlett*(" << fourDimArrayPtr->getFourDimArrayConcentration(s, c, sN, p) << ")";
 									break;
 								case 3: fout << "1 parallel";
+									break;
+								case 41: fout << "Grubbs Min(" << fourDimArrayPtr->getFourDimArrayConcentration(s, c, sN, p) << ")";
+									break;
+								case 42: fout << "Grubbs Max(" << fourDimArrayPtr->getFourDimArrayConcentration(s, c, sN, p) << ")";
+									break;
 								default:
 									break;
 							}
