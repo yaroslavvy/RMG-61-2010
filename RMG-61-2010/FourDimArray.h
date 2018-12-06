@@ -25,7 +25,7 @@ public:
 
 	static FourDimArray * extractDataFromTableToFourDimArray(struct sessions * arrayOfSessions);
 
-	void copyFourDimArray(FourDimArray * nullPtr);
+	static FourDimArray * copyFourDimArray(FourDimArray * input);
 
 	void printFourDimArray();
 

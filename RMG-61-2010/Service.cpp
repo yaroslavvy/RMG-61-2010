@@ -341,9 +341,10 @@ void Service::callMenu() {
 			repeatabilityLimitFourDimArrayPtr = Statistic::repeatabilityLimitCalculate(repeatabilityFourDimArrayPtr, amountOfParallelsInTestResult);
 			repeatabilityLimitFourDimArrayPtr->setDescription("Repeatability limit with " + std::to_string(amountOfParallelsInTestResult) + (amountOfParallelsInTestResult == 1 ? " parallel value" : " parallel values"));
 
-			fourDimArrayPtr->copyFourDimArray(fourDimArrayGrubbsCriterionPtr);// некорректная работа функции
-			/*fourDimArrayGrubbsCriterionPtr->setDescription("Common formated data with Grubbs criterion");
-			averageFourDimArrayPtr->copyFourDimArray(averageFourDimArrayGrubbsCriterionPtr);
+			fourDimArrayGrubbsCriterionPtr = FourDimArray::copyFourDimArray(fourDimArrayPtr);
+			fourDimArrayGrubbsCriterionPtr->setDescription("Common formated data with Grubbs criterion");
+
+			averageFourDimArrayGrubbsCriterionPtr = FourDimArray::copyFourDimArray(averageFourDimArrayPtr);
 			averageFourDimArrayGrubbsCriterionPtr->setDescription("Average values with Grubbs criterion");
 			
 			while (Statistic::grubbsCriterionCalculate(fourDimArrayGrubbsCriterionPtr, averageFourDimArrayGrubbsCriterionPtr)) {
@@ -356,7 +357,7 @@ void Service::callMenu() {
 				delete averageFourDimArrayGrubbsCriterionPtr;
 				averageFourDimArrayGrubbsCriterionPtr = NULL;
 				averageFourDimArrayGrubbsCriterionPtr = Statistic::averageCalculate(fourDimArrayGrubbsCriterionPtr);
-				//averageFourDimArrayGrubbsCriterionPtr->setDescription("Average values with Grubbs criterion");
+				averageFourDimArrayGrubbsCriterionPtr->setDescription("Average values with Grubbs criterion");
 
 				if (isPtrNull(averageFourDimArrayGrubbsCriterionPtr)) {
 					cout << "averageFourDimArrayGrubbsCriterionPtr is empty" << endl;
@@ -367,12 +368,12 @@ void Service::callMenu() {
 			delete biasFourDimArrayGrubbsCriterionPtr;
 			biasFourDimArrayGrubbsCriterionPtr = NULL;
 			biasFourDimArrayGrubbsCriterionPtr = Statistic::biasCalculate(averageFourDimArrayGrubbsCriterionPtr, fourDimArrayConcentrationsPtr);
-			//biasFourDimArrayGrubbsCriterionPtr->setDescription("Bias values with Grubbs criterion");
+			biasFourDimArrayGrubbsCriterionPtr->setDescription("Bias values with Grubbs criterion");
 
 			if (isPtrNull(biasFourDimArrayGrubbsCriterionPtr)) {
 				cout << "biasFourDimArrayGrubbsCriterionPtr is empty" << endl;
 				break;
-			}*/
+			}
 
 			break;
 		case 99:

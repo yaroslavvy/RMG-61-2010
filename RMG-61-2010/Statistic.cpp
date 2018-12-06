@@ -457,7 +457,21 @@ FourDimArray * Statistic::repeatabilityLimitCalculate(FourDimArray * repeatabili
 }
 
 bool Statistic::grubbsCriterionCalculate(FourDimArray * input, FourDimArray * average) {
+	OneDimArray * arrayAverage = NULL;
+	for (int s = 0; s < input->getAmountOfSession(); s++) {
+		for (int c = 0; c < average->getAmountOfComponent(); c++) {
+			for (int sN = 0; sN < average->getAmountOfSampleName(); sN++) {
+				arrayAverage = new OneDimArray[input->getAmountOfSession()];
 
+			}
+		}
+	}
+
+	
+
+
+
+	delete[] arrayAverage;
 	return false;
 }
 
