@@ -458,21 +458,100 @@ FourDimArray * Statistic::repeatabilityLimitCalculate(FourDimArray * repeatabili
 
 bool Statistic::grubbsCriterionCalculate(FourDimArray * input, FourDimArray * average) {
 	OneDimArray * arrayAverage = NULL;
-	for (int s = 0; s < input->getAmountOfSession(); s++) {
-		for (int c = 0; c < average->getAmountOfComponent(); c++) {
-			for (int sN = 0; sN < average->getAmountOfSampleName(); sN++) {
-				arrayAverage = new OneDimArray[input->getAmountOfSession()];
-
+	arrayAverage = new OneDimArray[input->getAmountOfSession()];
+	float minAverage = 0;
+	float maxAverage = 0;
+	float totalSumAverages = 0;
+	int counterAverages = 0;
+	float standardDeviation = 0;
+	float averageOfAverages = 0;
+	float sumOfSqDifferences = 0;
+	bool firstRealValue = false;
+	bool wasChanged = false;
+	
+	for (int c = 0; c < average->getAmountOfComponent(); c++) {
+		for (int sN = 0; sN < average->getAmountOfSampleName(); sN++) {
+			if ((input->getAmountOfSession(c, sN) > 2) && (input->getAmountOfSession(c, sN) < 41)) {
+				for (int i = 0; i < input->getAmountOfSession(); i++) {
+					arrayAverage[i].value = 0;
+					arrayAverage[i].isChanged = false;
+				}
+				for (int s = 0; s < input->getAmountOfSession(); s++) {
+					if ((average->getFourDimArrayVisible(s, c, sN, 0)) && (average->getFourDimArrayExist(s, c, sN, 0)) && (average->getFourDimArrayStatus(s, c, sN, 0) == 0)) {
+						arrayAverage[s].value = average->getFourDimArrayConcentration(s, c, sN, 0);
+						arrayAverage[s].isChanged = true;
+					}
+				}
+				firstRealValue = false;
+				for (int s = 0; s < input->getAmountOfSession(); s++) {
+					if ((arrayAverage[s].isChanged) && (!firstRealValue)) {
+						minAverage = arrayAverage[s].value;
+						firstRealValue = true;
+					}
+				}
+				maxAverage = 0;
+				totalSumAverages = 0;
+				counterAverages = 0;
+				standardDeviation = 0;
+				averageOfAverages = 0;
+				sumOfSqDifferences = 0;
+				for (int s = 0; s < input->getAmountOfSession(); s++) {
+					if (arrayAverage[s].isChanged) {
+						totalSumAverages += arrayAverage[s].value;
+						counterAverages++;
+						if (arrayAverage[s].value < minAverage) {
+							minAverage = arrayAverage[s].value;
+						}
+						if (arrayAverage[s].value > maxAverage) {
+							maxAverage = arrayAverage[s].value;
+						}
+					}
+				}
+				averageOfAverages = totalSumAverages / counterAverages;
+				for (int s = 0; s < input->getAmountOfSession(); s++) {
+					if (arrayAverage[s].isChanged) {
+						sumOfSqDifferences += pow(abs(arrayAverage[s].value - averageOfAverages), 2);
+					}
+				}
+				standardDeviation = sqrt(sumOfSqDifferences / (counterAverages - 1));
+				if (((maxAverage - averageOfAverages) / standardDeviation) > criticalValuesGrubbsCriterion(counterAverages)) {
+					for (int s = 0; s < input->getAmountOfSession(); s++) {
+						for (int p = 0; p < input->getAmountOfParallel(); p++) {
+							if ((input->getFourDimArrayExist(s, c, sN, p)) && (input->getFourDimArrayVisible(s, c, sN, p)) && (input->getFourDimArrayStatus(s, c, sN, p) == 0)) {
+								input->setFourDimArrayStatus(s, c, sN, p, 42);
+							}
+						}
+					}
+				}
+				if (((averageOfAverages - minAverage) / standardDeviation) > criticalValuesGrubbsCriterion(counterAverages)) {
+					for (int s = 0; s < input->getAmountOfSession(); s++) {
+						for (int p = 0; p < input->getAmountOfParallel(); p++) {
+							if ((input->getFourDimArrayExist(s, c, sN, p)) && (input->getFourDimArrayVisible(s, c, sN, p)) && (input->getFourDimArrayStatus(s, c, sN, p) == 0)) {
+								input->setFourDimArrayStatus(s, c, sN, p, 41);
+								wasChanged = true;
+							}
+						}
+					}
+				}
+			}
+			else {
+				for (int s = 0; s < input->getAmountOfSession(); s++) {
+					for (int p = 0; p < input->getAmountOfParallel(); p++) {
+						if ((input->getFourDimArrayExist(s, c, sN, p)) && (input->getFourDimArrayVisible(s, c, sN, p)) && (input->getFourDimArrayStatus(s, c, sN, p) == 0)) {
+							input->setFourDimArrayStatus(s, c, sN, p, 43);
+							wasChanged = true;
+						}
+					}
+				}
 			}
 		}
 	}
+	return wasChanged;
+}
 
-	
-
-
-
-	delete[] arrayAverage;
-	return false;
+float Statistic::criticalValuesGrubbsCriterion(int amountOfAverages) {
+	float criticalValuesGrubbsCriterion[38] = {1.155, 1.481, 1.715, 1.887, 2.020, 2.126, 2.215, 2.29, 2.355, 2.412, 2.462, 2.507, 2.549, 2.585, 2.62, 2.651, 2.681, 2.709, 2.733, 2.758, 2.781, 2.802, 2.822, 2.841, 2.859, 2.876, 2.893, 2.908, 2.924, 2.938, 2.952, 2.965, 2.979, 2.991, 3.003, 3.014, 3.025, 3.036};
+	return criticalValuesGrubbsCriterion[amountOfAverages - 3];
 }
 
 Statistic::~Statistic() {

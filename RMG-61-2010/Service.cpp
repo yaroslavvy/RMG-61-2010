@@ -460,6 +460,9 @@ void Service::writeOneFourDimArray(FourDimArray *fourDimArrayPtr, ofstream & fou
 									break;
 								case 42: fout << "Grubbs Max(" << fourDimArrayPtr->getFourDimArrayConcentration(s, c, sN, p) << ")";
 									break;
+								case 43: fout << "Grubbs incorrect amount of parallel (s < 3, s > 41)(" << fourDimArrayPtr->getFourDimArrayConcentration(s, c, sN, p) << ")";
+									break;
+
 								default:
 									break;
 							}

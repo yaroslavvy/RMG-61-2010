@@ -17,12 +17,14 @@ public:
 	static bool bartlettCriterionCalculate(FourDimArray * input, FourDimArray * dispersion, int component, int sampleName);
 	static bool arrayElementsAreEqual(int *array, int length);
 	static float cochranCriticalValues(int amountOfSessions, int amountOfParallels);
-	static float chiDistributionValues(int amountOfdipersion);
+	static float chiDistributionValues(int amountOfDipersion);
 	static FourDimArray * possibleOutlierReport(FourDimArray * input);
 	static int findOutlier(FourDimArray * input, int session, int component, int sampleName);
 	static FourDimArray * repeatabilityCalculate(FourDimArray * dispersion);
 	static FourDimArray * repeatabilityLimitCalculate(FourDimArray * repeatability, int amountOfParallelsInTestResult);
 	static bool grubbsCriterionCalculate(FourDimArray * input, FourDimArray * average);
+	static float criticalValuesGrubbsCriterion(int amountOfAverages);
+
 	~Statistic();
 protected:
 
