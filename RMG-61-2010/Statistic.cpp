@@ -463,6 +463,8 @@ bool Statistic::grubbsCriterionCalculate(FourDimArray * input, FourDimArray * av
 	float maxAverage = 0;
 	float totalSumAverages = 0;
 	int counterAverages = 0;
+	int minPosition = 0;
+	int maxPosition = 0;
 	float standardDeviation = 0;
 	float averageOfAverages = 0;
 	float sumOfSqDifferences = 0;
@@ -495,15 +497,19 @@ bool Statistic::grubbsCriterionCalculate(FourDimArray * input, FourDimArray * av
 				standardDeviation = 0;
 				averageOfAverages = 0;
 				sumOfSqDifferences = 0;
+				minPosition = 0;
+				maxPosition = 0;
 				for (int s = 0; s < input->getAmountOfSession(); s++) {
 					if (arrayAverage[s].isChanged) {
 						totalSumAverages += arrayAverage[s].value;
 						counterAverages++;
 						if (arrayAverage[s].value < minAverage) {
 							minAverage = arrayAverage[s].value;
+							minPosition = s;
 						}
 						if (arrayAverage[s].value > maxAverage) {
 							maxAverage = arrayAverage[s].value;
+							maxPosition = s;
 						}
 					}
 				}
@@ -515,21 +521,17 @@ bool Statistic::grubbsCriterionCalculate(FourDimArray * input, FourDimArray * av
 				}
 				standardDeviation = sqrt(sumOfSqDifferences / (counterAverages - 1));
 				if (((maxAverage - averageOfAverages) / standardDeviation) > criticalValuesGrubbsCriterion(counterAverages)) {
-					for (int s = 0; s < input->getAmountOfSession(); s++) {
-						for (int p = 0; p < input->getAmountOfParallel(); p++) {
-							if ((input->getFourDimArrayExist(s, c, sN, p)) && (input->getFourDimArrayVisible(s, c, sN, p)) && (input->getFourDimArrayStatus(s, c, sN, p) == 0)) {
-								input->setFourDimArrayStatus(s, c, sN, p, 42);
-							}
+					for (int p = 0; p < input->getAmountOfParallel(); p++) {
+						if ((input->getFourDimArrayExist(maxPosition, c, sN, p)) && (input->getFourDimArrayVisible(maxPosition, c, sN, p)) && (input->getFourDimArrayStatus(maxPosition, c, sN, p) == 0)) {
+							input->setFourDimArrayStatus(maxPosition, c, sN, p, 42);
 						}
 					}
 				}
 				if (((averageOfAverages - minAverage) / standardDeviation) > criticalValuesGrubbsCriterion(counterAverages)) {
-					for (int s = 0; s < input->getAmountOfSession(); s++) {
-						for (int p = 0; p < input->getAmountOfParallel(); p++) {
-							if ((input->getFourDimArrayExist(s, c, sN, p)) && (input->getFourDimArrayVisible(s, c, sN, p)) && (input->getFourDimArrayStatus(s, c, sN, p) == 0)) {
-								input->setFourDimArrayStatus(s, c, sN, p, 41);
-								wasChanged = true;
-							}
+					for (int p = 0; p < input->getAmountOfParallel(); p++) {
+						if ((input->getFourDimArrayExist(minPosition, c, sN, p)) && (input->getFourDimArrayVisible(minPosition, c, sN, p)) && (input->getFourDimArrayStatus(minPosition, c, sN, p) == 0)) {
+							input->setFourDimArrayStatus(minPosition, c, sN, p, 41);
+							wasChanged = true;
 						}
 					}
 				}
