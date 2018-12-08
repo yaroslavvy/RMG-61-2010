@@ -34,12 +34,14 @@ public:
 	void setFourDimArrayVisible(int session, int component, int sampleName, int parallel, bool visible);
 	void setFourDimArrayExist(int session, int component, int sampleName, int parallel, bool exist);
 	void setDescription(string description);
+	void setMessageWithNullStatus(int session, int component, int sampleName, int parallel, string message);
 
 	float getFourDimArrayConcentration(int session, int component, int sampleName, int parallel);
 	int getFourDimArrayStatus(int session, int component, int sampleName, int parallel);
 	bool getFourDimArrayVisible(int session, int component, int sampleName, int parallel);
 	bool getFourDimArrayExist(int session, int component, int sampleName, int parallel);
 	string getDescription();
+	string getMessageWithNullStatus(int session, int component, int sampleName, int parallel);
 
 	void pushParallel(int session, int component, int sampleName, float concentration);
 

@@ -39,10 +39,15 @@ protected:
 	static FourDimArray *possibleOutlierFourDimArrayPtr;
 	static FourDimArray *repeatabilityFourDimArrayPtr;
 	static FourDimArray *repeatabilityLimitFourDimArrayPtr;
+	static FourDimArray *reproducibilityFourDimArrayPtr;
+	static FourDimArray *reproducibilityLimitFourDimArrayPtr;
 	static int amountOfParallelsInTestResult;
 	static FourDimArray * fourDimArrayGrubbsCriterionPtr;
 	static FourDimArray * averageFourDimArrayGrubbsCriterionPtr;
 	static FourDimArray * biasFourDimArrayGrubbsCriterionPtr;
+	static FourDimArray * studentTTestFourDimArrayPtr;
+	static FourDimArray * truenessFourDimArrayPtr;
+	static FourDimArray * accuracyFourDimArrayPtr;
 
 };
 #endif // !SERVICE_H

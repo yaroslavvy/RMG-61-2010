@@ -54,6 +54,7 @@ FourDimArray::FourDimArray(int session, int component, int sampleName, int paral
 					setFourDimArrayStatus(s, c, sN, p, 0);
 					setFourDimArrayVisible(s, c, sN, p, true);
 					setFourDimArrayExist(s, c, sN, p, false);
+					setMessageWithNullStatus(s, c, sN, p, "");
 				}
 			}
 		}
@@ -82,6 +83,11 @@ void FourDimArray::setAmountOfParallel(int item) {
 
 void FourDimArray::setDescription(string item) {
 	description = item;
+	return;
+}
+
+void FourDimArray::setMessageWithNullStatus(int session, int component, int sampleName, int parallel, string message) {
+	(*(*(*(fourdimarray + session) + component) + sampleName) + parallel)->messageWithNullStatus = message;
 	return;
 }
 
@@ -142,6 +148,9 @@ string FourDimArray::getDescription() {
 	return description;
 }
 
+string FourDimArray::getMessageWithNullStatus(int session, int component, int sampleName, int parallel){
+	return (*(*(*(fourdimarray + session) + component) + sampleName) + parallel)->messageWithNullStatus;
+}
 
 FourDimArray * FourDimArray::extractDataFromTableToFourDimArray(struct sessions * arrayOfSessions) {
 	//Прежде чем создавать Ptr на объект необходимо определить какие параметры 4-х мерного массива нужно указать при его создании

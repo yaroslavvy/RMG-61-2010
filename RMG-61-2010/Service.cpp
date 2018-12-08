@@ -37,10 +37,15 @@ FourDimArray * Service::dispersionFourDimArrayPtr = NULL;
 FourDimArray * Service::possibleOutlierFourDimArrayPtr = NULL;
 FourDimArray * Service::repeatabilityFourDimArrayPtr = NULL;
 FourDimArray * Service::repeatabilityLimitFourDimArrayPtr = NULL;
+FourDimArray * Service::reproducibilityFourDimArrayPtr = NULL;
+FourDimArray * Service::reproducibilityLimitFourDimArrayPtr = NULL;
 
 FourDimArray * Service::fourDimArrayGrubbsCriterionPtr = NULL;
 FourDimArray * Service::averageFourDimArrayGrubbsCriterionPtr = NULL;
 FourDimArray * Service::biasFourDimArrayGrubbsCriterionPtr = NULL;
+FourDimArray * Service::studentTTestFourDimArrayPtr = NULL;
+FourDimArray * Service::truenessFourDimArrayPtr = NULL;
+FourDimArray * Service::accuracyFourDimArrayPtr = NULL;
 
 int Service::amountOfParallelsInTestResult = 0;
 
@@ -375,9 +380,59 @@ void Service::callMenu() {
 				break;
 			}
 
+			delete reproducibilityFourDimArrayPtr;
+			reproducibilityFourDimArrayPtr = NULL;
+			reproducibilityFourDimArrayPtr = Statistic::reproducibilityCalculate(fourDimArrayGrubbsCriterionPtr, averageFourDimArrayGrubbsCriterionPtr, repeatabilityFourDimArrayPtr, amountOfParallelsInTestResult);
+			reproducibilityFourDimArrayPtr->setDescription("Reproducibility with " + std::to_string(amountOfParallelsInTestResult) + (amountOfParallelsInTestResult == 1 ? " parallel value" : " parallel values"));
+
+			if (isPtrNull(reproducibilityFourDimArrayPtr)) {
+				cout << "reproducibilityFourDimArrayPtr is empty" << endl;
+				break;
+			}
+
+			delete reproducibilityLimitFourDimArrayPtr;
+			reproducibilityLimitFourDimArrayPtr = NULL;
+			reproducibilityLimitFourDimArrayPtr = Statistic::reproducibilityLimitCalculate(reproducibilityFourDimArrayPtr, amountOfParallelsInTestResult);
+			reproducibilityLimitFourDimArrayPtr->setDescription("Reproducibility limit with " + std::to_string(amountOfParallelsInTestResult) + (amountOfParallelsInTestResult == 1 ? " parallel value" : " parallel values"));
+
+			if (isPtrNull(reproducibilityLimitFourDimArrayPtr)) {
+				cout << "reproducibilityLimitFourDimArrayPtr is empty" << endl;
+				break;
+			}
+
+			delete studentTTestFourDimArrayPtr;
+			studentTTestFourDimArrayPtr = NULL;
+			studentTTestFourDimArrayPtr = Statistic::studentTTestCalculate(averageFourDimArrayGrubbsCriterionPtr, fourDimArrayConcentrationsPtr, fourDimArrayUncertaintiesPtr);
+			studentTTestFourDimArrayPtr->setDescription("Student's t-test");
+
+			if (isPtrNull(studentTTestFourDimArrayPtr)) {
+				cout << "studentTTestFourDimArrayPtr is empty" << endl;
+				break;
+			}
+
+			delete truenessFourDimArrayPtr;
+			truenessFourDimArrayPtr = NULL;
+			truenessFourDimArrayPtr = Statistic::truenessCalculate(averageFourDimArrayGrubbsCriterionPtr, fourDimArrayConcentrationsPtr, fourDimArrayUncertaintiesPtr, studentTTestFourDimArrayPtr);
+			truenessFourDimArrayPtr->setDescription("Trueness");
+
+			if (isPtrNull(truenessFourDimArrayPtr)) {
+				cout << "truenessFourDimArrayPtr is empty" << endl;
+				break;
+			}
+
+			delete accuracyFourDimArrayPtr;
+			accuracyFourDimArrayPtr = NULL;
+			accuracyFourDimArrayPtr = Statistic::accuracyCalculate(averageFourDimArrayGrubbsCriterionPtr, fourDimArrayConcentrationsPtr, fourDimArrayUncertaintiesPtr, reproducibilityFourDimArrayPtr, studentTTestFourDimArrayPtr);
+			accuracyFourDimArrayPtr->setDescription("Accuracy");
+
+			if (isPtrNull(accuracyFourDimArrayPtr)) {
+				cout << "accuracyFourDimArrayPtr is empty" << endl;
+				break;
+			}
+
 			break;
 		case 99:
-			if (Service::saveReport(fourDimArrayPtr, fourDimArrayConcentrationsPtr, fourDimArrayUncertaintiesPtr, averageFourDimArrayPtr, dispersionFourDimArrayPtr, possibleOutlierFourDimArrayPtr, repeatabilityFourDimArrayPtr, repeatabilityLimitFourDimArrayPtr, fourDimArrayGrubbsCriterionPtr, averageFourDimArrayGrubbsCriterionPtr, biasFourDimArrayGrubbsCriterionPtr, NULL)) {
+			if (Service::saveReport(fourDimArrayPtr, fourDimArrayConcentrationsPtr, fourDimArrayUncertaintiesPtr, averageFourDimArrayPtr, dispersionFourDimArrayPtr, possibleOutlierFourDimArrayPtr, repeatabilityFourDimArrayPtr, repeatabilityLimitFourDimArrayPtr, fourDimArrayGrubbsCriterionPtr, averageFourDimArrayGrubbsCriterionPtr, biasFourDimArrayGrubbsCriterionPtr, reproducibilityFourDimArrayPtr, reproducibilityLimitFourDimArrayPtr, studentTTestFourDimArrayPtr, truenessFourDimArrayPtr, accuracyFourDimArrayPtr, NULL)) {
 				cout << endl << "Report has been saved as report.csv" << endl;
 			}
 			else {
@@ -441,7 +496,7 @@ void Service::writeOneFourDimArray(FourDimArray *fourDimArrayPtr, ofstream & fou
 			for (int p = 0; p < fourDimArrayPtr->getAmountOfParallel(); p++) {
 				for (int c = 0; c < fourDimArrayPtr->getAmountOfComponent(); c++) {
 					if (fourDimArrayPtr->getFourDimArrayExist(s, c, sN, p) && fourDimArrayPtr->getFourDimArrayVisible(s, c, sN, p) && (fourDimArrayPtr->getFourDimArrayStatus(s, c, sN, p) == 0)) {
-						fout << fourDimArrayPtr->getFourDimArrayConcentration(s, c, sN, p);
+						fout << fourDimArrayPtr->getMessageWithNullStatus(s, c, sN, p) << fourDimArrayPtr->getFourDimArrayConcentration(s, c, sN, p);
 					}
 					else {
 						if (fourDimArrayPtr->getFourDimArrayExist(s, c, sN, p) && (fourDimArrayPtr->getFourDimArrayStatus(s, c, sN, p) != 0)) {

@@ -24,6 +24,13 @@ public:
 	static FourDimArray * repeatabilityLimitCalculate(FourDimArray * repeatability, int amountOfParallelsInTestResult);
 	static bool grubbsCriterionCalculate(FourDimArray * input, FourDimArray * average);
 	static float criticalValuesGrubbsCriterion(int amountOfAverages);
+	static float qTable(int amountOfParallelsInTestResult);
+	static FourDimArray * reproducibilityCalculate(FourDimArray * input, FourDimArray * average, FourDimArray * repeatability, int amountOfParallelsInTestResult);
+	static FourDimArray * reproducibilityLimitCalculate(FourDimArray * reproducibility, int amountOfParallelsInTestResult);
+	static FourDimArray * studentTTestCalculate(FourDimArray * average, FourDimArray * concentrations, FourDimArray * uncertainties);
+	static float percentagePointsOfStudentDistribution(int amountOfExistAverages);
+	static FourDimArray * truenessCalculate(FourDimArray * average, FourDimArray * concentrations, FourDimArray * uncertainties, FourDimArray * student);
+	static FourDimArray * accuracyCalculate(FourDimArray * average, FourDimArray * concentrations, FourDimArray * uncertainties, FourDimArray * reproducibility, FourDimArray * student);
 
 	~Statistic();
 protected:
