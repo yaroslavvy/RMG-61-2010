@@ -42,6 +42,7 @@ FourDimArray * Service::reproducibilityLimitFourDimArrayPtr = NULL;
 
 FourDimArray * Service::fourDimArrayGrubbsCriterionPtr = NULL;
 FourDimArray * Service::averageFourDimArrayGrubbsCriterionPtr = NULL;
+FourDimArray * Service::averageOfAveragesFourDimArrayGrubbsCriterionPtr = NULL;
 FourDimArray * Service::biasFourDimArrayGrubbsCriterionPtr = NULL;
 FourDimArray * Service::studentTTestFourDimArrayPtr = NULL;
 FourDimArray * Service::truenessFourDimArrayPtr = NULL;
@@ -370,9 +371,19 @@ void Service::callMenu() {
 				}
 			}
 
+			delete averageOfAveragesFourDimArrayGrubbsCriterionPtr;
+			averageOfAveragesFourDimArrayGrubbsCriterionPtr = NULL;
+			averageOfAveragesFourDimArrayGrubbsCriterionPtr = Statistic::averageOfAveragesCalculate(averageFourDimArrayGrubbsCriterionPtr);
+			averageOfAveragesFourDimArrayGrubbsCriterionPtr->setDescription("Bias values with Grubbs criterion");
+
+			if (isPtrNull(averageOfAveragesFourDimArrayGrubbsCriterionPtr)) {
+				cout << "averageOfAveragesFourDimArrayGrubbsCriterionPtr is empty" << endl;
+				break;
+			}
+
 			delete biasFourDimArrayGrubbsCriterionPtr;
 			biasFourDimArrayGrubbsCriterionPtr = NULL;
-			biasFourDimArrayGrubbsCriterionPtr = Statistic::biasCalculate(averageFourDimArrayGrubbsCriterionPtr, fourDimArrayConcentrationsPtr);
+			biasFourDimArrayGrubbsCriterionPtr = Statistic::biasCalculate(averageOfAveragesFourDimArrayGrubbsCriterionPtr, fourDimArrayConcentrationsPtr);
 			biasFourDimArrayGrubbsCriterionPtr->setDescription("Bias values with Grubbs criterion");
 
 			if (isPtrNull(biasFourDimArrayGrubbsCriterionPtr)) {
@@ -382,7 +393,7 @@ void Service::callMenu() {
 
 			delete reproducibilityFourDimArrayPtr;
 			reproducibilityFourDimArrayPtr = NULL;
-			reproducibilityFourDimArrayPtr = Statistic::reproducibilityCalculate(fourDimArrayGrubbsCriterionPtr, averageFourDimArrayGrubbsCriterionPtr, repeatabilityFourDimArrayPtr, amountOfParallelsInTestResult);
+			reproducibilityFourDimArrayPtr = Statistic::reproducibilityCalculate(fourDimArrayGrubbsCriterionPtr, averageFourDimArrayGrubbsCriterionPtr, averageOfAveragesFourDimArrayGrubbsCriterionPtr, repeatabilityFourDimArrayPtr, amountOfParallelsInTestResult);
 			reproducibilityFourDimArrayPtr->setDescription("Reproducibility with " + std::to_string(amountOfParallelsInTestResult) + (amountOfParallelsInTestResult == 1 ? " parallel value" : " parallel values"));
 
 			if (isPtrNull(reproducibilityFourDimArrayPtr)) {
@@ -402,7 +413,7 @@ void Service::callMenu() {
 
 			delete studentTTestFourDimArrayPtr;
 			studentTTestFourDimArrayPtr = NULL;
-			studentTTestFourDimArrayPtr = Statistic::studentTTestCalculate(averageFourDimArrayGrubbsCriterionPtr, fourDimArrayConcentrationsPtr, fourDimArrayUncertaintiesPtr);
+			studentTTestFourDimArrayPtr = Statistic::studentTTestCalculate(averageFourDimArrayGrubbsCriterionPtr, averageOfAveragesFourDimArrayGrubbsCriterionPtr, biasFourDimArrayGrubbsCriterionPtr, fourDimArrayUncertaintiesPtr);
 			studentTTestFourDimArrayPtr->setDescription("Student's t-test");
 
 			if (isPtrNull(studentTTestFourDimArrayPtr)) {
@@ -412,7 +423,7 @@ void Service::callMenu() {
 
 			delete truenessFourDimArrayPtr;
 			truenessFourDimArrayPtr = NULL;
-			truenessFourDimArrayPtr = Statistic::truenessCalculate(averageFourDimArrayGrubbsCriterionPtr, fourDimArrayConcentrationsPtr, fourDimArrayUncertaintiesPtr, studentTTestFourDimArrayPtr);
+			truenessFourDimArrayPtr = Statistic::truenessCalculate(averageFourDimArrayGrubbsCriterionPtr, averageOfAveragesFourDimArrayGrubbsCriterionPtr, biasFourDimArrayGrubbsCriterionPtr, fourDimArrayUncertaintiesPtr, studentTTestFourDimArrayPtr);
 			truenessFourDimArrayPtr->setDescription("Trueness");
 
 			if (isPtrNull(truenessFourDimArrayPtr)) {
@@ -422,7 +433,7 @@ void Service::callMenu() {
 
 			delete accuracyFourDimArrayPtr;
 			accuracyFourDimArrayPtr = NULL;
-			accuracyFourDimArrayPtr = Statistic::accuracyCalculate(averageFourDimArrayGrubbsCriterionPtr, fourDimArrayConcentrationsPtr, fourDimArrayUncertaintiesPtr, reproducibilityFourDimArrayPtr, studentTTestFourDimArrayPtr);
+			accuracyFourDimArrayPtr = Statistic::accuracyCalculate(averageFourDimArrayGrubbsCriterionPtr, averageOfAveragesFourDimArrayGrubbsCriterionPtr, biasFourDimArrayGrubbsCriterionPtr, fourDimArrayUncertaintiesPtr, reproducibilityFourDimArrayPtr, studentTTestFourDimArrayPtr);
 			accuracyFourDimArrayPtr->setDescription("Accuracy");
 
 			if (isPtrNull(accuracyFourDimArrayPtr)) {
@@ -432,7 +443,7 @@ void Service::callMenu() {
 
 			break;
 		case 99:
-			if (Service::saveReport(fourDimArrayPtr, fourDimArrayConcentrationsPtr, fourDimArrayUncertaintiesPtr, averageFourDimArrayPtr, dispersionFourDimArrayPtr, possibleOutlierFourDimArrayPtr, repeatabilityFourDimArrayPtr, repeatabilityLimitFourDimArrayPtr, fourDimArrayGrubbsCriterionPtr, averageFourDimArrayGrubbsCriterionPtr, biasFourDimArrayGrubbsCriterionPtr, reproducibilityFourDimArrayPtr, reproducibilityLimitFourDimArrayPtr, studentTTestFourDimArrayPtr, truenessFourDimArrayPtr, accuracyFourDimArrayPtr, NULL)) {
+			if (Service::saveReport(fourDimArrayPtr, fourDimArrayConcentrationsPtr, fourDimArrayUncertaintiesPtr, averageFourDimArrayPtr, dispersionFourDimArrayPtr, possibleOutlierFourDimArrayPtr, repeatabilityFourDimArrayPtr, repeatabilityLimitFourDimArrayPtr, fourDimArrayGrubbsCriterionPtr, averageFourDimArrayGrubbsCriterionPtr, reproducibilityFourDimArrayPtr, reproducibilityLimitFourDimArrayPtr, studentTTestFourDimArrayPtr, truenessFourDimArrayPtr, accuracyFourDimArrayPtr, NULL)) {
 				cout << endl << "Report has been saved as report.csv" << endl;
 			}
 			else {
@@ -517,7 +528,8 @@ void Service::writeOneFourDimArray(FourDimArray *fourDimArrayPtr, ofstream & fou
 									break;
 								case 43: fout << "Grubbs incorrect amount of parallel (s < 3, s > 41)(" << fourDimArrayPtr->getFourDimArrayConcentration(s, c, sN, p) << ")";
 									break;
-
+								case 5: fout << "Incorrect amount of exist sessions for Student's t-test calculation (s < 2 s > 31)(" << fourDimArrayPtr->getFourDimArrayConcentration(s, c, sN, p) << ")";
+									break;
 								default:
 									break;
 							}

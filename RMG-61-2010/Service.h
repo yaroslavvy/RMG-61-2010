@@ -44,6 +44,7 @@ protected:
 	static int amountOfParallelsInTestResult;
 	static FourDimArray * fourDimArrayGrubbsCriterionPtr;
 	static FourDimArray * averageFourDimArrayGrubbsCriterionPtr;
+	static FourDimArray * averageOfAveragesFourDimArrayGrubbsCriterionPtr;
 	static FourDimArray * biasFourDimArrayGrubbsCriterionPtr;
 	static FourDimArray * studentTTestFourDimArrayPtr;
 	static FourDimArray * truenessFourDimArrayPtr;
