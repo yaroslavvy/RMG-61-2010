@@ -42,7 +42,7 @@ FourDimArray * Statistic::averageCalculate(FourDimArray * input) {
 				total = 0;
 				parallelCounter = 0;
 				for (int p = 0; p < input->getAmountOfParallel(); p++) {
-					if ((input->getFourDimArrayVisible(s, c, sN, p)) && (input->getFourDimArrayExist(s, c, sN, p))) {
+					if (input->getFourDimArrayExist(s, c, sN, p)) {
 						sPtr->setFourDimArrayStatus(s, c, sN, 0, input->getFourDimArrayStatus(s, c, sN, p));
 						total += input->getFourDimArrayConcentration(s, c, sN, p);
 						parallelCounter++;
@@ -73,7 +73,7 @@ FourDimArray * Statistic::biasCalculate(FourDimArray * averageOfAverages, FourDi
 
 	for (int c = 0; c < averageOfAverages->getAmountOfComponent(); c++) {
 		for (int sN = 0; sN < averageOfAverages->getAmountOfSampleName(); sN++) {
-			if ((concentrations->getFourDimArrayExist(0, c, sN, 0)) && (concentrations->getFourDimArrayVisible(0, c, sN, 0)) && (averageOfAverages->getFourDimArrayExist(0, c, sN, 0)) && (averageOfAverages->getFourDimArrayVisible(0, c, sN, 0))) {
+			if ((concentrations->getFourDimArrayExist(0, c, sN, 0)) && (averageOfAverages->getFourDimArrayExist(0, c, sN, 0))) {
 				sPtr->setFourDimArrayConcentration(0, c, sN, 0, averageOfAverages->getFourDimArrayConcentration(0, c, sN, 0) - concentrations->getFourDimArrayConcentration(0, c, sN, 0));
 				sPtr->setFourDimArrayExist(0, c, sN, 0, true);
 				sPtr->setFourDimArrayStatus(0, c, sN, 0, averageOfAverages->getFourDimArrayStatus(0, c, sN, 0));
@@ -103,7 +103,7 @@ FourDimArray * Statistic::averageOfAveragesCalculate(FourDimArray * average) {
 			totalSumOfAverages = 0;
 			averageCounter = 0;
 			for (int s = 0; s < average->getAmountOfSession(); s++) {
-				if ((average->getFourDimArrayVisible(s, c, sN, 0)) && (average->getFourDimArrayExist(s, c, sN, 0)) && (average->getFourDimArrayStatus(s, c, sN, 0) == 0)) {
+				if ((average->getFourDimArrayExist(s, c, sN, 0)) && (average->getFourDimArrayStatus(s, c, sN, 0) == 0)) {
 					totalSumOfAverages += average->getFourDimArrayConcentration(s, c, sN, 0);
 					averageCounter++;
 				}
@@ -141,14 +141,14 @@ FourDimArray * Statistic::dispersionCalculate(FourDimArray * input, FourDimArray
 	for (int s = 0; s < input->getAmountOfSession(); s++) {
 		for (int c = 0; c < input->getAmountOfComponent(); c++) {
 			for (int sN = 0; sN < input->getAmountOfSampleName(); sN++) {
-				if ((average->getFourDimArrayVisible(s, c, sN, 0)) && (average->getFourDimArrayExist(s, c, sN, 0))) {
+				if (average->getFourDimArrayExist(s, c, sN, 0)) {
 					sPtr->setFourDimArrayStatus(s, c, sN, 0, (average->getFourDimArrayStatus(s, c, sN, 0)));
 					parallelCounter = 0;
 					totalSumOfSqr = 0;
 					isEqual = 0;
 					equalFlag = true;
 					for (int p = 0; p < input->getAmountOfParallel(); p++) {
-						if ((input->getFourDimArrayVisible(s, c, sN, p)) && (input->getFourDimArrayExist(s, c, sN, p))) {
+						if (input->getFourDimArrayExist(s, c, sN, p)) {
 							if ((p != 0) && (equalFlag)) {
 								if (isEqual != input->getFourDimArrayConcentration(s, c, sN, p)) {
 									equalFlag = false;
@@ -385,7 +385,7 @@ int Statistic::findOutlier(FourDimArray * input, int session, int component, int
 	int minParalleldispersion = 0;
 	for (int exception = 0; exception < input->getAmountOfParallel(); exception++) {
 		for (int p = 0; p < input->getAmountOfParallel(); p++) {
-			if ((input->getFourDimArrayExist(session, component, sampleName, p)) && (input->getFourDimArrayVisible(session, component, sampleName, p)) && (exception != p)) {
+			if ((input->getFourDimArrayExist(session, component, sampleName, p)) && (exception != p)) {
 				totalSum += input->getFourDimArrayConcentration(session, component, sampleName, p);
 				countOfParallels++;
 			}
@@ -396,7 +396,7 @@ int Statistic::findOutlier(FourDimArray * input, int session, int component, int
 	}
 	for (int exception = 0; exception < input->getAmountOfParallel(); exception++) {
 		for (int p = 0; p < input->getAmountOfParallel(); p++) {
-			if ((input->getFourDimArrayExist(session, component, sampleName, p)) && (input->getFourDimArrayVisible(session, component, sampleName, p)) && (exception != p)) {
+			if ((input->getFourDimArrayExist(session, component, sampleName, p)) && (exception != p)) {
 				totalSumSqr += pow(abs(input->getFourDimArrayConcentration(session, component, sampleName, p) - arrayAverage[exception]), 2);
 				countOfParallels++;
 			}
@@ -448,7 +448,7 @@ FourDimArray * Statistic::repeatabilityCalculate(FourDimArray * dispersion) {
 			totalSumOfDispersion = 0;
 			dispersionCounter = 0;
 			for (int s = 0; s < dispersion->getAmountOfSession(); s++) {
-				if ((dispersion->getFourDimArrayVisible(s, c, sN, 0)) && (dispersion->getFourDimArrayExist(s, c, sN, 0)) && (dispersion->getFourDimArrayStatus(s, c, sN, 0) == 0)) {
+				if ((dispersion->getFourDimArrayExist(s, c, sN, 0)) && (dispersion->getFourDimArrayStatus(s, c, sN, 0) == 0)) {
 						totalSumOfDispersion += dispersion->getFourDimArrayConcentration(s, c, sN, 0);
 						dispersionCounter++;
 				}
@@ -477,7 +477,7 @@ FourDimArray * Statistic::repeatabilityLimitCalculate(FourDimArray * repeatabili
 
 	for (int c = 0; c < repeatability->getAmountOfComponent(); c++) {
 		for (int sN = 0; sN < repeatability->getAmountOfSampleName(); sN++) {
-			if ((repeatability->getFourDimArrayVisible(0, c, sN, 0)) && (repeatability->getFourDimArrayExist(0, c, sN, 0)) && (repeatability->getFourDimArrayStatus(0, c, sN, 0) == 0) && (amountOfParallelsInTestResult > 0) && (amountOfParallelsInTestResult <= 5)){
+			if ((repeatability->getFourDimArrayExist(0, c, sN, 0)) && (repeatability->getFourDimArrayStatus(0, c, sN, 0) == 0) && (amountOfParallelsInTestResult > 0) && (amountOfParallelsInTestResult <= 5)){
 				if (amountOfParallelsInTestResult > 1) {
 					sPtr->setFourDimArrayConcentration(0, c, sN, 0, ((repeatability->getFourDimArrayConcentration(0, c, sN, 0)) * qTable(amountOfParallelsInTestResult)));
 				}
@@ -514,7 +514,7 @@ bool Statistic::grubbsCriterionCalculate(FourDimArray * input, FourDimArray * av
 					arrayAverage[i].isChanged = false;
 				}
 				for (int s = 0; s < input->getAmountOfSession(); s++) {
-					if ((average->getFourDimArrayVisible(s, c, sN, 0)) && (average->getFourDimArrayExist(s, c, sN, 0)) && (average->getFourDimArrayStatus(s, c, sN, 0) == 0)) {
+					if ((average->getFourDimArrayExist(s, c, sN, 0)) && (average->getFourDimArrayStatus(s, c, sN, 0) == 0)) {
 						arrayAverage[s].value = average->getFourDimArrayConcentration(s, c, sN, 0);
 						arrayAverage[s].isChanged = true;
 					}
@@ -557,14 +557,14 @@ bool Statistic::grubbsCriterionCalculate(FourDimArray * input, FourDimArray * av
 				standardDeviation = sqrt(sumOfSqDifferences / (counterAverages - 1));
 				if (((maxAverage - averageOfAverages) / standardDeviation) > criticalValuesGrubbsCriterion(counterAverages)) {
 					for (int p = 0; p < input->getAmountOfParallel(); p++) {
-						if ((input->getFourDimArrayExist(maxPosition, c, sN, p)) && (input->getFourDimArrayVisible(maxPosition, c, sN, p)) && (input->getFourDimArrayStatus(maxPosition, c, sN, p) == 0)) {
+						if ((input->getFourDimArrayExist(maxPosition, c, sN, p)) && (input->getFourDimArrayStatus(maxPosition, c, sN, p) == 0)) {
 							input->setFourDimArrayStatus(maxPosition, c, sN, p, 42);
 						}
 					}
 				}
 				if (((averageOfAverages - minAverage) / standardDeviation) > criticalValuesGrubbsCriterion(counterAverages)) {
 					for (int p = 0; p < input->getAmountOfParallel(); p++) {
-						if ((input->getFourDimArrayExist(minPosition, c, sN, p)) && (input->getFourDimArrayVisible(minPosition, c, sN, p)) && (input->getFourDimArrayStatus(minPosition, c, sN, p) == 0)) {
+						if ((input->getFourDimArrayExist(minPosition, c, sN, p)) && (input->getFourDimArrayStatus(minPosition, c, sN, p) == 0)) {
 							input->setFourDimArrayStatus(minPosition, c, sN, p, 41);
 							wasChanged = true;
 						}
@@ -574,7 +574,7 @@ bool Statistic::grubbsCriterionCalculate(FourDimArray * input, FourDimArray * av
 			else {
 				for (int s = 0; s < input->getAmountOfSession(); s++) {
 					for (int p = 0; p < input->getAmountOfParallel(); p++) {
-						if ((input->getFourDimArrayExist(s, c, sN, p)) && (input->getFourDimArrayVisible(s, c, sN, p)) && (input->getFourDimArrayStatus(s, c, sN, p) == 0)) {
+						if ((input->getFourDimArrayExist(s, c, sN, p)) && (input->getFourDimArrayStatus(s, c, sN, p) == 0)) {
 							input->setFourDimArrayStatus(s, c, sN, p, 43);
 							wasChanged = true;
 						}
@@ -623,7 +623,7 @@ FourDimArray * Statistic::reproducibilityCalculate(FourDimArray * input, FourDim
 				standartDeviation = 0;
 				minAmountOfParallel = 0;
 				for (int s = 0; s < average->getAmountOfSession(); s++) {
-					if ((average->getFourDimArrayVisible(s, c, sN, 0)) && (average->getFourDimArrayExist(s, c, sN, 0)) && (average->getFourDimArrayStatus(s, c, sN, 0) == 0)) {
+					if ((average->getFourDimArrayExist(s, c, sN, 0)) && (average->getFourDimArrayStatus(s, c, sN, 0) == 0)) {
 						sumOfSqDifferences += pow(abs(average->getFourDimArrayConcentration(s, c, sN, 0) - averageOfAverages->getFourDimArrayConcentration(0, c, sN, 0)), 2);
 						sqDifferencesCounter++;
 					}
@@ -674,7 +674,7 @@ FourDimArray * Statistic::reproducibilityLimitCalculate(FourDimArray * reproduci
 
 	for (int c = 0; c < reproducibility->getAmountOfComponent(); c++) {
 		for (int sN = 0; sN < reproducibility->getAmountOfSampleName(); sN++) {
-			if ((reproducibility->getFourDimArrayVisible(0, c, sN, 0)) && (reproducibility->getFourDimArrayExist(0, c, sN, 0)) && (reproducibility->getFourDimArrayStatus(0, c, sN, 0) == 0) && (amountOfParallelsInTestResult > 0) && (amountOfParallelsInTestResult <= 5)) {
+			if ((reproducibility->getFourDimArrayExist(0, c, sN, 0)) && (reproducibility->getFourDimArrayStatus(0, c, sN, 0) == 0) && (amountOfParallelsInTestResult > 0) && (amountOfParallelsInTestResult <= 5)) {
 				if (amountOfParallelsInTestResult > 1) {
 					sPtr->setFourDimArrayConcentration(0, c, sN, 0, ((reproducibility->getFourDimArrayConcentration(0, c, sN, 0)) * qTable(amountOfParallelsInTestResult)));
 				}
@@ -709,9 +709,9 @@ FourDimArray * Statistic::studentTTestCalculate(FourDimArray * average, FourDimA
 			averageCounter = 0;
 			sumOfSqDifferences = 0;
 			averageOfDispersions = 0;
-			if ((averageOfAverages->getFourDimArrayExist(0, c, sN, 0)) && (averageOfAverages->getFourDimArrayVisible(0, c, sN, 0)) && (averageOfAverages->getFourDimArrayStatus(0, c, sN, 0) == 0) && (uncertainties->getFourDimArrayExist(0, c, sN, 0)) && (uncertainties->getFourDimArrayVisible(0, c, sN, 0))) {
+			if ((averageOfAverages->getFourDimArrayExist(0, c, sN, 0)) && (averageOfAverages->getFourDimArrayStatus(0, c, sN, 0) == 0) && (uncertainties->getFourDimArrayExist(0, c, sN, 0))) {
 				for (int s = 0; s < average->getAmountOfSession(); s++) {
-					if ((average->getFourDimArrayVisible(s, c, sN, 0)) && (average->getFourDimArrayExist(s, c, sN, 0)) && (average->getFourDimArrayStatus(s, c, sN, 0) == 0)) {
+					if ((average->getFourDimArrayExist(s, c, sN, 0)) && (average->getFourDimArrayStatus(s, c, sN, 0) == 0)) {
 						sumOfSqDifferences += pow(abs(average->getFourDimArrayConcentration(s, c, sN, 0) - averageOfAverages->getFourDimArrayConcentration(0, c, sN, 0)), 2);
 						averageCounter++;
 					}
@@ -756,9 +756,9 @@ FourDimArray * Statistic::truenessCalculate(FourDimArray * average, FourDimArray
 			sumOfSqDifferences = 0;
 			averageOfDispersions = 0;
 			trueness = 0;
-			if ((student->getFourDimArrayExist(0, c, sN, 0)) && (student->getFourDimArrayVisible(0, c, sN, 0)) && (student->getFourDimArrayStatus(0, c, sN, 0) == 0) && (bias->getFourDimArrayExist(0, c, sN, 0)) && (bias->getFourDimArrayVisible(0, c, sN, 0)) && (bias->getFourDimArrayStatus(0, c, sN, 0) == 0) && (uncertainties->getFourDimArrayExist(0, c, sN, 0)) && (uncertainties->getFourDimArrayVisible(0, c, sN, 0))) {
+			if ((student->getFourDimArrayExist(0, c, sN, 0)) && (student->getFourDimArrayStatus(0, c, sN, 0) == 0) && (bias->getFourDimArrayExist(0, c, sN, 0)) && (bias->getFourDimArrayStatus(0, c, sN, 0) == 0) && (uncertainties->getFourDimArrayExist(0, c, sN, 0))) {
 				for (int s = 0; s < average->getAmountOfSession(); s++) {
-					if ((average->getFourDimArrayVisible(s, c, sN, 0)) && (average->getFourDimArrayExist(s, c, sN, 0)) && (average->getFourDimArrayStatus(s, c, sN, 0) == 0)) {
+					if ((average->getFourDimArrayExist(s, c, sN, 0)) && (average->getFourDimArrayStatus(s, c, sN, 0) == 0)) {
 						sumOfSqDifferences += pow(abs(average->getFourDimArrayConcentration(s, c, sN, 0) - averageOfAverages->getFourDimArrayConcentration(0, c, sN, 0)), 2);
 						averageCounter++;
 					}
@@ -805,9 +805,9 @@ FourDimArray * Statistic::accuracyCalculate(FourDimArray * average, FourDimArray
 			averageOfDispersions = 0;
 			truenessStDev = 0;
 			accuracy = 0;
-			if ((student->getFourDimArrayExist(0, c, sN, 0)) && (student->getFourDimArrayVisible(0, c, sN, 0)) && (student->getFourDimArrayStatus(0, c, sN, 0) == 0) && (bias->getFourDimArrayExist(0, c, sN, 0)) && (bias->getFourDimArrayVisible(0, c, sN, 0)) && (bias->getFourDimArrayStatus(0, c, sN, 0) == 0) && (uncertainties->getFourDimArrayExist(0, c, sN, 0)) && (uncertainties->getFourDimArrayVisible(0, c, sN, 0))) {
+			if ((student->getFourDimArrayExist(0, c, sN, 0)) && (student->getFourDimArrayStatus(0, c, sN, 0) == 0) && (bias->getFourDimArrayExist(0, c, sN, 0)) && (bias->getFourDimArrayStatus(0, c, sN, 0) == 0) && (uncertainties->getFourDimArrayExist(0, c, sN, 0))) {
 				for (int s = 0; s < average->getAmountOfSession(); s++) {
-					if ((average->getFourDimArrayVisible(s, c, sN, 0)) && (average->getFourDimArrayExist(s, c, sN, 0)) && (average->getFourDimArrayStatus(s, c, sN, 0) == 0)) {
+					if ((average->getFourDimArrayExist(s, c, sN, 0)) && (average->getFourDimArrayStatus(s, c, sN, 0) == 0)) {
 						sumOfSqDifferences += pow(abs(average->getFourDimArrayConcentration(s, c, sN, 0) - averageOfAverages->getFourDimArrayConcentration(0, c, sN, 0)), 2);
 						averageCounter++;
 					}

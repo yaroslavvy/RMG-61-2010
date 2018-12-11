@@ -52,7 +52,6 @@ FourDimArray::FourDimArray(int session, int component, int sampleName, int paral
 				for (int p = 0; p < getAmountOfParallel(); p++) {
 					setFourDimArrayConcentration(s, c, sN, p, 0);
 					setFourDimArrayStatus(s, c, sN, p, 0);
-					setFourDimArrayVisible(s, c, sN, p, true);
 					setFourDimArrayExist(s, c, sN, p, false);
 					setMessageWithNullStatus(s, c, sN, p, "");
 				}
@@ -326,7 +325,6 @@ FourDimArray * FourDimArray::copyFourDimArray(FourDimArray * input) {
 				 for (int p = 0; p < input->getAmountOfParallel(); p++) {
 					 sPtr->setFourDimArrayConcentration(s, c, sN, p, input->getFourDimArrayConcentration(s, c, sN, p));
 					 sPtr->setFourDimArrayStatus(s, c, sN, p, input->getFourDimArrayStatus(s, c, sN, p));
-					 sPtr->setFourDimArrayVisible(s, c, sN, p, input->getFourDimArrayVisible(s, c, sN, p));
 					 sPtr->setFourDimArrayExist(s, c, sN, p, input->getFourDimArrayExist(s, c, sN, p));
 				 }
 			 }
@@ -347,7 +345,7 @@ void FourDimArray::printFourDimArray() {
 			cout << getStrSampleName(sN) << "\t\t";
 			for (int p = 0; p < getAmountOfParallel(); p++) {
 				for (int c = 0; c < getAmountOfComponent(); c++) {
-					(getFourDimArrayStatus(s, c, sN, p) == 0) && getFourDimArrayExist(s, c, sN, p) && getFourDimArrayVisible(s, c, sN, p) ? cout << getFourDimArrayConcentration(s, c, sN, p) : cout << "";
+					(getFourDimArrayStatus(s, c, sN, p) == 0) && getFourDimArrayExist(s, c, sN, p) ? cout << getFourDimArrayConcentration(s, c, sN, p) : cout << "";
 					if (c < (getAmountOfComponent() - 1)) {
 						cout << "\t\t";
 					}
@@ -370,11 +368,6 @@ void FourDimArray::setFourDimArrayStatus(int session, int component, int sampleN
 	return;
 }
 
-void FourDimArray::setFourDimArrayVisible(int session, int component, int sampleName, int parallel, bool state) {
-	(*(*(*(fourdimarray + session) + component) + sampleName) + parallel)->visible = state;
-	return;
-}
-
 void FourDimArray::setFourDimArrayExist(int session, int component, int sampleName, int parallel, bool state) {
 	(*(*(*(fourdimarray + session) + component) + sampleName) + parallel)->exist = state;
 	return;
@@ -386,10 +379,6 @@ float FourDimArray::getFourDimArrayConcentration(int session, int component, int
 
 int FourDimArray::getFourDimArrayStatus(int session, int component, int sampleName, int parallel) {
 	return (*(*(*(fourdimarray + session) + component) + sampleName) + parallel)->status;
-}
-
-bool FourDimArray::getFourDimArrayVisible(int session, int component, int sampleName, int parallel) {
-	return (*(*(*(fourdimarray + session) + component) + sampleName) + parallel)->visible;
 }
 
 bool FourDimArray::getFourDimArrayExist(int session, int component, int sampleName, int parallel) {

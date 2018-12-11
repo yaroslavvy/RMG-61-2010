@@ -6,7 +6,6 @@ using std::string;
 
 struct cell {
 	float concentration;
-	bool visible;
 	bool exist;
 	int status;
 	string messageWithNullStatus;

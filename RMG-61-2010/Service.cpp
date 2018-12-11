@@ -724,7 +724,7 @@ void Service::writeOneFourDimArray(FourDimArray *fourDimArrayPtr, ofstream & fou
 			fout << fourDimArrayPtr->getStrSampleName(sN) << ";";
 			for (int p = 0; p < fourDimArrayPtr->getAmountOfParallel(); p++) {
 				for (int c = 0; c < fourDimArrayPtr->getAmountOfComponent(); c++) {
-					if (fourDimArrayPtr->getFourDimArrayExist(s, c, sN, p) && fourDimArrayPtr->getFourDimArrayVisible(s, c, sN, p) && (fourDimArrayPtr->getFourDimArrayStatus(s, c, sN, p) == 0)) {
+					if (fourDimArrayPtr->getFourDimArrayExist(s, c, sN, p) && (fourDimArrayPtr->getFourDimArrayStatus(s, c, sN, p) == 0)) {
 						fout << fourDimArrayPtr->getMessageWithNullStatus(s, c, sN, p) << fourDimArrayPtr->getFourDimArrayConcentration(s, c, sN, p);
 					}
 					else {
