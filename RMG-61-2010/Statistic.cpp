@@ -634,6 +634,7 @@ FourDimArray * Statistic::reproducibilityCalculate(FourDimArray * input, FourDim
 				for (int s = 0; s < input->getAmountOfSession(); s++) {
 					if ((input->getAmountOfParallel(s, c, sN) > 0)) {
 						minAmountOfParallel = input->getAmountOfParallel(s, c, sN);
+						s = input->getAmountOfSession();
 					}
 				}
 				for (int s = 0; s < input->getAmountOfSession(); s++) {
@@ -641,7 +642,8 @@ FourDimArray * Statistic::reproducibilityCalculate(FourDimArray * input, FourDim
 						minAmountOfParallel = input->getAmountOfParallel(s, c, sN);
 					}
 				}
-				standartDeviation = pow((dispersion + (((1 / amountOfParallelsInTestResult) - (1 / minAmountOfParallel)) * repeatability->getFourDimArrayConcentration(0, c, sN, 0))), 2);
+			
+				standartDeviation = sqrt((dispersion + (((static_cast<float>(1) / amountOfParallelsInTestResult) - (static_cast<float>(1) / minAmountOfParallel)) * pow(repeatability->getFourDimArrayConcentration(0, c, sN, 0), 2))));
 				if (amountOfParallelsInTestResult == 1) {
 					sPtr->setFourDimArrayConcentration(0, c, sN, 0, sqrt(pow(standartDeviation, 2) + (pow(repeatability->getFourDimArrayConcentration(0, c, sN, 0), 2) / 2)));
 					sPtr->setFourDimArrayExist(0, c, sN, 0, true);
