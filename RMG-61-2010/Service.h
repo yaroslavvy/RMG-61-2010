@@ -17,11 +17,11 @@ public:
 	static string numberEnding(int number);
 	static bool saveReport(FourDimArray* fourDimArrayPtr, ...);
 	static void writeOneFourDimArray(FourDimArray *fourDimArrayPtr, ofstream & fout);
+	static bool isIntegerFromString(const string possibleInteger);
 	~Service();
 protected:
 	static string item;
 	static string strAnswerDialogMenu;
-	static int intAnswerDialogMenu;
 	static int command;
 	static int column;
 	static int row;
