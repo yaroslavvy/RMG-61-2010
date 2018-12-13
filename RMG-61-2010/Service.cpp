@@ -21,12 +21,11 @@ int Service::command = 0;
 int Service::column = 0;
 int Service::row = 0;
 int Service::tmp = 0;
-string Service::strAnswerDialogMenu = "";
 string Service::fileName = "";
 string Service::item = "";
 List * Service::startPtr = NULL;
 DataTable * Service::newDataTable = NULL;
-struct sessions * Service::arrayOfSessions = NULL;
+
 //DataTable ** Service::sessionDataTablesArray = NULL;
 FourDimArray * Service::fourDimArrayPtr = NULL;
 FourDimArray * Service::fourDimArrayConcentrationsPtr = NULL;
@@ -55,6 +54,8 @@ Service::Service()
 }
 
 void Service::callMenu() {
+	string strAnswerDialogMenu = "";
+
 	cout << endl << "How many experimental sessions (days) have been carried out (correct value must be > 0)?" << endl << endl;
 	getline(cin, strAnswerDialogMenu);
 	while ((!isIntegerFromString(strAnswerDialogMenu)) || (stoi(strAnswerDialogMenu) <= 0)) {
@@ -68,14 +69,13 @@ void Service::callMenu() {
 		getline(cin, strAnswerDialogMenu);
 	}
 	int amountOfSessions = stoi(strAnswerDialogMenu);
-	arrayOfSessions = NULL;
-	arrayOfSessions = new sessions;
-	arrayOfSessions->sessionDataTablesArray = NULL;
+
+	struct sessions * arrayOfSessions = new sessions;
+	arrayOfSessions->sessionDataTablesArray = new DataTable *[amountOfSessions];
 	arrayOfSessions->crmConcentraions = NULL;
 	arrayOfSessions->crmUncertainties = NULL;
 	arrayOfSessions->amountOfSessions = amountOfSessions;
-	arrayOfSessions->sessionDataTablesArray = new DataTable *[amountOfSessions];
-
+	
 	//cin.get(); // разобрать с танцем с бубном в случае с cin потоком, почему иногда не читает первый символ
 	for (int i = 0; i < amountOfSessions; i++) {
 		do {

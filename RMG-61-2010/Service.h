@@ -21,7 +21,6 @@ public:
 	~Service();
 protected:
 	static string item;
-	static string strAnswerDialogMenu;
 	static int command;
 	static int column;
 	static int row;
@@ -30,7 +29,6 @@ protected:
 	static List *startPtr;
 	static DataTable *newDataTable;
 	//static DataTable **sessionDataTablesArray;
-	static struct sessions *arrayOfSessions;
 	static FourDimArray *fourDimArrayPtr;
 	static FourDimArray *fourDimArrayConcentrationsPtr;
 	static FourDimArray *fourDimArrayUncertaintiesPtr;
