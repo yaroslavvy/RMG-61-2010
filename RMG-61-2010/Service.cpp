@@ -94,11 +94,11 @@ void Service::callMenu() {
 	FourDimArray * fourDimArrayPtr = FourDimArray::extractDataFromTableToFourDimArray(arrayOfSessions);
 	fourDimArrayPtr->setDescription("Common formated data");
 
-	FourDimArray * fourDimArrayConcentrationsPtr = new FourDimArray(1, fourDimArrayPtr->getAmountOfComponent(), fourDimArrayPtr->getAmountOfSampleName(), 1);
+	FourDimArray * fourDimArrayConcentrationsPtr = new FourDimArray(1, fourDimArrayPtr->getAmountOfComponents(), fourDimArrayPtr->getAmountOfSampleNames(), 1);
 	fourDimArrayConcentrationsPtr->pasteValuesInCopyFormat(fourDimArrayPtr, arrayOfSessions->crmConcentraions, NULL);
 	fourDimArrayConcentrationsPtr->setDescription("Concentrations of CRMs");
 
-	FourDimArray * fourDimArrayUncertaintiesPtr = new FourDimArray(1, fourDimArrayPtr->getAmountOfComponent(), fourDimArrayPtr->getAmountOfSampleName(), 1);
+	FourDimArray * fourDimArrayUncertaintiesPtr = new FourDimArray(1, fourDimArrayPtr->getAmountOfComponents(), fourDimArrayPtr->getAmountOfSampleNames(), 1);
 	fourDimArrayUncertaintiesPtr->pasteValuesInCopyFormat(fourDimArrayPtr, arrayOfSessions->crmUncertainties, fourDimArrayConcentrationsPtr);
 	fourDimArrayUncertaintiesPtr->setDescription("Uncertainties of CRM's concentrations");
 
@@ -173,7 +173,7 @@ void Service::callMenu() {
 	for (int i = 0; i < amountOfSessions; i++) {
 		delete arrayOfSessions->sessionDataTablesArray[i];
 	}
-	/*delete arrayOfSessions->crmConcentraions;
+	delete arrayOfSessions->crmConcentraions;
 	delete arrayOfSessions->crmUncertainties;
 	delete arrayOfSessions;
 	delete fourDimArrayPtr;
@@ -193,7 +193,7 @@ void Service::callMenu() {
 	delete studentTTestFourDimArrayPtr;
 	delete truenessFourDimArrayPtr;
 	delete accuracyFourDimArrayPtr;
-	return;*/
+	return;
 }
 
 string Service::numberEnding(const int number) {
@@ -206,11 +206,6 @@ string Service::numberEnding(const int number) {
 }
 
 bool Service::saveReport(FourDimArray* fourDimArrayPtr, ...) {
-	
-	if (fourDimArrayPtr) {
-		return false;
-	}
-
 	ofstream fout;
 	fout.open("report.csv");
 
@@ -228,16 +223,16 @@ void Service::writeOneFourDimArray(FourDimArray *fourDimArrayPtr, ofstream & fou
 	fout << "\n";
 	fout << fourDimArrayPtr->getDescription();
 	fout << "\n";
-	for (int s = 0; s < fourDimArrayPtr->getAmountOfSession(); s++) {
-		fourDimArrayPtr->getAmountOfSession() == 1 ? fout << ";" : fout << s + 1 << " session:" << ";";
-		for (int c = 0; c < fourDimArrayPtr->getAmountOfComponent(); c++) {
+	for (int s = 0; s < fourDimArrayPtr->getAmountOfSessions(); s++) {
+		fourDimArrayPtr->getAmountOfSessions() == 1 ? fout << ";" : fout << s + 1 << " session:" << ";";
+		for (int c = 0; c < fourDimArrayPtr->getAmountOfComponents(); c++) {
 			fout << fourDimArrayPtr->getStrComponent(c);
-			c == (fourDimArrayPtr->getAmountOfComponent() - 1) ? fout << "\n" : fout << ";";
+			c == (fourDimArrayPtr->getAmountOfComponents() - 1) ? fout << "\n" : fout << ";";
 		}
-		for (int sN = 0; sN < fourDimArrayPtr->getAmountOfSampleName(); sN++) {
+		for (int sN = 0; sN < fourDimArrayPtr->getAmountOfSampleNames(); sN++) {
 			fout << fourDimArrayPtr->getStrSampleName(sN) << ";";
-			for (int p = 0; p < fourDimArrayPtr->getAmountOfParallel(); p++) {
-				for (int c = 0; c < fourDimArrayPtr->getAmountOfComponent(); c++) {
+			for (int p = 0; p < fourDimArrayPtr->getAmountOfParallels(); p++) {
+				for (int c = 0; c < fourDimArrayPtr->getAmountOfComponents(); c++) {
 					if (fourDimArrayPtr->getFourDimArrayExist(s, c, sN, p) && (fourDimArrayPtr->getFourDimArrayStatus(s, c, sN, p) == 0)) {
 						fout << fourDimArrayPtr->getMessageWithNullStatus(s, c, sN, p) << fourDimArrayPtr->getFourDimArrayConcentration(s, c, sN, p);
 					}
@@ -270,17 +265,17 @@ void Service::writeOneFourDimArray(FourDimArray *fourDimArrayPtr, ofstream & fou
 							fout << "";
 						}
 					}
-					if (c < (fourDimArrayPtr->getAmountOfComponent() - 1)) {
+					if (c < (fourDimArrayPtr->getAmountOfComponents() - 1)) {
 						fout << ";";
 					}
 				}
-				if (fourDimArrayPtr->getAmountOfParallel() != 1) {
+				if (fourDimArrayPtr->getAmountOfParallels() != 1) {
 					fout << "\n" << ";";
 				}
 			}
 			fout << "\n";
 		}
-		if (fourDimArrayPtr->getAmountOfParallel() == 1) {
+		if (fourDimArrayPtr->getAmountOfParallels() == 1) {
 			fout << "\n";
 		}
 	}

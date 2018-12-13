@@ -66,10 +66,10 @@ void DataTable::setNameArray(const int row, const string name) {
 }
 
 DataTable::~DataTable() {
-	/*for (int i = 0; i < getAmountOfMatrixRows(); i++) {
+	for (int i = 0; i < getAmountOfMatrixRows(); i++) {
 		delete[](*(matrix + i));
 	}
 	delete[] matrix;
 	delete[] componentArray;
-	delete[] nameArray;*/
+	delete[] nameArray;
 }

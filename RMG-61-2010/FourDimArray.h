@@ -8,26 +8,24 @@
 
 class FourDimArray {
 public:
-	FourDimArray(const int session, const int component, const int sampleName, const int parallel);
+	FourDimArray(const int session, const int component, const int sampleName, const int parallel);//+
 
-	void setAmountOfSession(const int item);
-	void setAmountOfComponent(const int item);
-	void setAmountOfSampleName(const int item);
-	void setAmountOfParallel(const int item);
+	void setAmountOfSessions(const int item);
+	void setAmountOfComponents(const int item);
+	void setAmountOfSampleNames(const int item);
+	void setAmountOfParallels(const int item);
 
-	int getAmountOfSession();
-	int getAmountOfSession(const int component, const int sampleName);
-	int getAmountOfComponent();
-	int getAmountOfSampleName();
-	int getAmountOfParallel();
-	int getAmountOfParallel(const int session, const int component, const int sampleName);
-	int getAmountOfParallel(const int session, const int component, const int sampleName, const string withoutSmth);
+	int getAmountOfSessions();
+	int getAmountOfSessions(const int component, const int sampleName);
+	int getAmountOfComponents();
+	int getAmountOfSampleNames();
+	int getAmountOfParallels();
+	int getAmountOfParallels(const int session, const int component, const int sampleName);
+	int getAmountOfExistParallels(const int session, const int component, const int sampleName);
 
 	static FourDimArray * extractDataFromTableToFourDimArray(const struct sessions * arrayOfSessions);
 
 	static FourDimArray * copyFourDimArray(FourDimArray * input);
-
-	void printFourDimArray();
 
 	void setFourDimArrayConcentration(const int session, const int component, const int sampleName, const int parallel, const float concentration);
 	void setFourDimArrayStatus(const int session, const int component, const int sampleName, const int parallel, const int status);
@@ -46,26 +44,27 @@ public:
 	void pasteValuesInCopyFormat(FourDimArray *fourDimArrayPtr, DataTable *crm, FourDimArray *crmConcentration);
 
 	void setStrComponent(const int componentOrder, const string component);
-	void setStrSampleName(const int sampleNameOrder, const string sampleName);
-
 	void setStrComponent(const int componentOrder, const int component);
+	void setStrSampleName(const int sampleNameOrder, const string sampleName);
 	void setStrSampleName(const int sampleNameOrder, const int sampleName);
 
 	string getStrComponent(const int componentOrder);
 	string getStrSampleName(const int sampleNameOrder);
 
+	static bool isFloatFromString(const string possibleFloat);
+
 	~FourDimArray();
 
 protected:
-	int amountOfSession;
-	int amountOfComponent;
-	int amountOfSampleName;
-	int amountOfParallel;
+	int amountOfSessions;
+	int amountOfComponents;
+	int amountOfSampleNames;
+	int amountOfParallels;
 
-	string *componentArray;
-	string *sampleNameArray;
+	string *componentsArray;
+	string *sampleNamesArray;
 
-	struct cell ****fourdimarray;
+	struct cell ****fourDimArray;
 
 	string description;
 };

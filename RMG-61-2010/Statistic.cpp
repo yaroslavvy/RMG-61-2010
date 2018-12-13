@@ -26,22 +26,22 @@ FourDimArray * Statistic::averageCalculate(FourDimArray * input) {
 	int parallelCounter = 0;
 	int statusFlag = 0;
 	FourDimArray *sPtr = NULL;
-	sPtr = new FourDimArray(input->getAmountOfSession(), input->getAmountOfComponent(), input->getAmountOfSampleName(), 1);
+	sPtr = new FourDimArray(input->getAmountOfSessions(), input->getAmountOfComponents(), input->getAmountOfSampleNames(), 1);
 
-	for (int c = 0; c < input->getAmountOfComponent(); c++) {
+	for (int c = 0; c < input->getAmountOfComponents(); c++) {
 		sPtr->setStrComponent(c, (input->getStrComponent(c)));
 	}
 
-	for (int sN = 0; sN < input->getAmountOfSampleName(); sN++) {
+	for (int sN = 0; sN < input->getAmountOfSampleNames(); sN++) {
 		sPtr->setStrSampleName(sN, (input->getStrSampleName(sN)));
 	}
 
-	for (int s = 0; s < input->getAmountOfSession(); s++) {
-		for (int c = 0; c < input->getAmountOfComponent(); c++) {
-			for (int sN = 0; sN < input->getAmountOfSampleName(); sN++) {
+	for (int s = 0; s < input->getAmountOfSessions(); s++) {
+		for (int c = 0; c < input->getAmountOfComponents(); c++) {
+			for (int sN = 0; sN < input->getAmountOfSampleNames(); sN++) {
 				total = 0;
 				parallelCounter = 0;
-				for (int p = 0; p < input->getAmountOfParallel(); p++) {
+				for (int p = 0; p < input->getAmountOfParallels(); p++) {
 					if (input->getFourDimArrayExist(s, c, sN, p)) {
 						sPtr->setFourDimArrayStatus(s, c, sN, 0, input->getFourDimArrayStatus(s, c, sN, p));
 						total += input->getFourDimArrayConcentration(s, c, sN, p);
@@ -61,18 +61,18 @@ FourDimArray * Statistic::averageCalculate(FourDimArray * input) {
 FourDimArray * Statistic::biasCalculate(FourDimArray * averageOfAverages, FourDimArray * concentrations) {
 
 	FourDimArray *sPtr = NULL;
-	sPtr = new FourDimArray(1, averageOfAverages->getAmountOfComponent(), averageOfAverages->getAmountOfSampleName(), 1);
+	sPtr = new FourDimArray(1, averageOfAverages->getAmountOfComponents(), averageOfAverages->getAmountOfSampleNames(), 1);
 
-	for (int c = 0; c < averageOfAverages->getAmountOfComponent(); c++) {
+	for (int c = 0; c < averageOfAverages->getAmountOfComponents(); c++) {
 		sPtr->setStrComponent(c, (averageOfAverages->getStrComponent(c)));
 	}
 
-	for (int sN = 0; sN < averageOfAverages->getAmountOfSampleName(); sN++) {
+	for (int sN = 0; sN < averageOfAverages->getAmountOfSampleNames(); sN++) {
 		sPtr->setStrSampleName(sN, (averageOfAverages->getStrSampleName(sN)));
 	}
 
-	for (int c = 0; c < averageOfAverages->getAmountOfComponent(); c++) {
-		for (int sN = 0; sN < averageOfAverages->getAmountOfSampleName(); sN++) {
+	for (int c = 0; c < averageOfAverages->getAmountOfComponents(); c++) {
+		for (int sN = 0; sN < averageOfAverages->getAmountOfSampleNames(); sN++) {
 			if ((concentrations->getFourDimArrayExist(0, c, sN, 0)) && (averageOfAverages->getFourDimArrayExist(0, c, sN, 0))) {
 				sPtr->setFourDimArrayConcentration(0, c, sN, 0, averageOfAverages->getFourDimArrayConcentration(0, c, sN, 0) - concentrations->getFourDimArrayConcentration(0, c, sN, 0));
 				sPtr->setFourDimArrayExist(0, c, sN, 0, true);
@@ -88,31 +88,31 @@ FourDimArray * Statistic::averageOfAveragesCalculate(FourDimArray * average) {
 	int averageCounter = 0;
 
 	FourDimArray *sPtr = NULL;
-	sPtr = new FourDimArray(1, average->getAmountOfComponent(), average->getAmountOfSampleName(), 1);
+	sPtr = new FourDimArray(1, average->getAmountOfComponents(), average->getAmountOfSampleNames(), 1);
 
-	for (int c = 0; c < average->getAmountOfComponent(); c++) {
+	for (int c = 0; c < average->getAmountOfComponents(); c++) {
 		sPtr->setStrComponent(c, (average->getStrComponent(c)));
 	}
 
-	for (int sN = 0; sN < average->getAmountOfSampleName(); sN++) {
+	for (int sN = 0; sN < average->getAmountOfSampleNames(); sN++) {
 		sPtr->setStrSampleName(sN, (average->getStrSampleName(sN)));
 	}
 
-	for (int c = 0; c < average->getAmountOfComponent(); c++) {
-		for (int sN = 0; sN < average->getAmountOfSampleName(); sN++) {
+	for (int c = 0; c < average->getAmountOfComponents(); c++) {
+		for (int sN = 0; sN < average->getAmountOfSampleNames(); sN++) {
 			totalSumOfAverages = 0;
 			averageCounter = 0;
-			for (int s = 0; s < average->getAmountOfSession(); s++) {
+			for (int s = 0; s < average->getAmountOfSessions(); s++) {
 				if ((average->getFourDimArrayExist(s, c, sN, 0)) && (average->getFourDimArrayStatus(s, c, sN, 0) == 0)) {
 					totalSumOfAverages += average->getFourDimArrayConcentration(s, c, sN, 0);
 					averageCounter++;
 				}
 			}
-			if ((average->getAmountOfSession(c, sN) > 1) && (average->getAmountOfSession(c, sN) <= 31)) {
+			if ((average->getAmountOfSessions(c, sN) > 1) && (average->getAmountOfSessions(c, sN) <= 31)) {
 				sPtr->setFourDimArrayConcentration(0, c, sN, 0, (totalSumOfAverages / averageCounter));
 				sPtr->setFourDimArrayExist(0, c, sN, 0, true);
 			}
-			if ((average->getAmountOfSession(c, sN) == 1) || (average->getAmountOfSession(c, sN) > 31)) {
+			if ((average->getAmountOfSessions(c, sN) == 1) || (average->getAmountOfSessions(c, sN) > 31)) {
 				sPtr->setFourDimArrayConcentration(0, c, sN, 0, (totalSumOfAverages / averageCounter));
 				sPtr->setFourDimArrayExist(0, c, sN, 0, true);
 				sPtr->setFourDimArrayStatus(0, c, sN, 0, 5);
@@ -128,26 +128,26 @@ FourDimArray * Statistic::dispersionCalculate(FourDimArray * input, FourDimArray
 	float isEqual = 0;
 	bool equalFlag = true;
 	FourDimArray *sPtr = NULL;
-	sPtr = new FourDimArray(input->getAmountOfSession(), input->getAmountOfComponent(), input->getAmountOfSampleName(), 1);
+	sPtr = new FourDimArray(input->getAmountOfSessions(), input->getAmountOfComponents(), input->getAmountOfSampleNames(), 1);
 
-	for (int c = 0; c < input->getAmountOfComponent(); c++) {
+	for (int c = 0; c < input->getAmountOfComponents(); c++) {
 		sPtr->setStrComponent(c, (input->getStrComponent(c)));
 	}
 
-	for (int sN = 0; sN < input->getAmountOfSampleName(); sN++) {
+	for (int sN = 0; sN < input->getAmountOfSampleNames(); sN++) {
 		sPtr->setStrSampleName(sN, (input->getStrSampleName(sN)));
 	}
 
-	for (int s = 0; s < input->getAmountOfSession(); s++) {
-		for (int c = 0; c < input->getAmountOfComponent(); c++) {
-			for (int sN = 0; sN < input->getAmountOfSampleName(); sN++) {
+	for (int s = 0; s < input->getAmountOfSessions(); s++) {
+		for (int c = 0; c < input->getAmountOfComponents(); c++) {
+			for (int sN = 0; sN < input->getAmountOfSampleNames(); sN++) {
 				if (average->getFourDimArrayExist(s, c, sN, 0)) {
 					sPtr->setFourDimArrayStatus(s, c, sN, 0, (average->getFourDimArrayStatus(s, c, sN, 0)));
 					parallelCounter = 0;
 					totalSumOfSqr = 0;
 					isEqual = 0;
 					equalFlag = true;
-					for (int p = 0; p < input->getAmountOfParallel(); p++) {
+					for (int p = 0; p < input->getAmountOfParallels(); p++) {
 						if (input->getFourDimArrayExist(s, c, sN, p)) {
 							if ((p != 0) && (equalFlag)) {
 								if (isEqual != input->getFourDimArrayConcentration(s, c, sN, p)) {
@@ -172,8 +172,8 @@ FourDimArray * Statistic::dispersionCalculate(FourDimArray * input, FourDimArray
 
 bool Statistic::cochranAndBartlettCriterionCalculate(FourDimArray * input, FourDimArray * dispersion) {
 	bool changes = false;
-	for (int c = 0; c < input->getAmountOfComponent(); c++) {
-		for (int sN = 0; sN < input->getAmountOfSampleName(); sN++) {
+	for (int c = 0; c < input->getAmountOfComponents(); c++) {
+		for (int sN = 0; sN < input->getAmountOfSampleNames(); sN++) {
 			switch (Statistic::selectCochranOrBartlettCriterion(input, dispersion, c, sN)) {
 				case 1: 
 					changes |= Statistic::cochranCriterionCalculate(input, dispersion, c, sN);
@@ -189,34 +189,34 @@ bool Statistic::cochranAndBartlettCriterionCalculate(FourDimArray * input, FourD
 	return changes;
 }
 
-int Statistic::selectCochranOrBartlettCriterion(FourDimArray * input, FourDimArray * dispersion, int component, int sampleName) {
-	if (dispersion->getAmountOfSession(component, sampleName) < 2) {
+int Statistic::selectCochranOrBartlettCriterion(FourDimArray * input, FourDimArray * dispersion, const int component, const int sampleName) {
+	if (dispersion->getAmountOfSessions(component, sampleName) < 2) {
 		return 0;
 	}//самое первое - проверка на необходимость отбора дисперсий по любым критериям (отсутствие или 1 сессия, т.е. отсутствие или 1 дисперсия не могут работать ни с одним из критериев)
 	
-	for (int s = 0; s < input->getAmountOfSession(); s++) {
-		for (int p = 0; p < input->getAmountOfParallel(); p++) {
+	for (int s = 0; s < input->getAmountOfSessions(); s++) {
+		for (int p = 0; p < input->getAmountOfParallels(); p++) {
 			if (input->getFourDimArrayStatus(s, component, sampleName, p) != 0) {
 				return input->getFourDimArrayStatus(s, component, sampleName, p);
 			}
 		}
 	}// если среди сессий одного компонента и образца уже был критериальный отсев, то необходимо продолжить пользоваться старым критерием вне зависимости от всех остальных факторов
-	if ((dispersion->getAmountOfSession(component, sampleName) > 40)) {
+	if ((dispersion->getAmountOfSessions(component, sampleName) > 40)) {
 		return 2;
 	}// если более 40 сессий, то работает только Бартлетт
 	int i = 0;
-	int *arrayOfParallels = new int[dispersion->getAmountOfSession(component, sampleName)];
-	for (int s = 0; s < input->getAmountOfSession(); s++) {
-		if (input->getAmountOfParallel(s, component, sampleName) > 1) {
-			if (input->getAmountOfParallel(s, component, sampleName) > 6) {
+	int *arrayOfParallels = new int[dispersion->getAmountOfSessions(component, sampleName)];
+	for (int s = 0; s < input->getAmountOfSessions(); s++) {
+		if (input->getAmountOfParallels(s, component, sampleName) > 1) {
+			if (input->getAmountOfParallels(s, component, sampleName) > 6) {
 				return 2;
 			}// если в какой-то сессии более 6 параллельных испытаний, то работает только Бартлетт
-			arrayOfParallels[i] = input->getAmountOfParallel(s, component, sampleName);
+			arrayOfParallels[i] = input->getAmountOfParallels(s, component, sampleName);
 			i++;
 		}
 	}
 
-	if (Statistic::arrayElementsAreEqual(arrayOfParallels, input->getAmountOfSession(component, sampleName))) {
+	if (Statistic::arrayElementsAreEqual(arrayOfParallels, input->getAmountOfSessions(component, sampleName))) {
 		return 1;// количество параллелей во всех сессиях одинаково, значит Кохрен
 	}
 	else {
@@ -224,7 +224,7 @@ int Statistic::selectCochranOrBartlettCriterion(FourDimArray * input, FourDimArr
 	}
 }
 
-bool Statistic::arrayElementsAreEqual(int *array, int length) {
+bool Statistic::arrayElementsAreEqual(int *array, const int length) {
 	for (int i = 1; i < length; i++) {
 		if (array[i - 1] != array[i]) {
 			return false;
@@ -233,31 +233,31 @@ bool Statistic::arrayElementsAreEqual(int *array, int length) {
 	return true;
 }
 
-bool Statistic::cochranCriterionCalculate(FourDimArray * input, FourDimArray * dispersion, int component, int sampleName) {
+bool Statistic::cochranCriterionCalculate(FourDimArray * input, FourDimArray * dispersion, const int component, const int sampleName) {
 	float maxDispersion = 0;
 	int maxDispersionSession = 0;
 	float totalSumOfDispersions = 0;
 	int amountOfParallels = 0;
 	int tmpAmountOfParallels = 0;
-	for (int s = 0; s < dispersion->getAmountOfSession(); s++) {
+	for (int s = 0; s < dispersion->getAmountOfSessions(); s++) {
 		if (((dispersion->getFourDimArrayConcentration(s, component, sampleName, 0)) > maxDispersion) && ((dispersion->getFourDimArrayStatus(s, component, sampleName, 0)) == 0) && (dispersion->getFourDimArrayExist(s, component, sampleName, 0))) {
 			maxDispersion = (dispersion->getFourDimArrayConcentration(s, component, sampleName, 0));
 			maxDispersionSession = s;
 		}
 	}
-	for (int s = 0; s < dispersion->getAmountOfSession(); s++) {
+	for (int s = 0; s < dispersion->getAmountOfSessions(); s++) {
 		if (((dispersion->getFourDimArrayStatus(s, component, sampleName, 0)) == 0) && (dispersion->getFourDimArrayExist(s, component, sampleName, 0))) {
 			totalSumOfDispersions += (dispersion->getFourDimArrayConcentration(s, component, sampleName, 0));
 		}
 	}
-	for (int s = 0; s < input->getAmountOfSession(); s++) {
-		if (input->getAmountOfParallel(s, component, sampleName) > 1) {
-			amountOfParallels = input->getAmountOfParallel(s, component, sampleName);
-			s = input->getAmountOfSession();
+	for (int s = 0; s < input->getAmountOfSessions(); s++) {
+		if (input->getAmountOfParallels(s, component, sampleName) > 1) {
+			amountOfParallels = input->getAmountOfParallels(s, component, sampleName);
+			s = input->getAmountOfSessions();
 		}
 	}
-	if ((maxDispersion / totalSumOfDispersions) > Statistic::cochranCriticalValues((dispersion->getAmountOfSession(component, sampleName)), amountOfParallels)) {
-		tmpAmountOfParallels = input->getAmountOfParallel(maxDispersionSession, component, sampleName);
+	if ((maxDispersion / totalSumOfDispersions) > Statistic::cochranCriticalValues((dispersion->getAmountOfSessions(component, sampleName)), amountOfParallels)) {
+		tmpAmountOfParallels = input->getAmountOfParallels(maxDispersionSession, component, sampleName);
 		for (int p = 0; p < tmpAmountOfParallels; p++) {
 			input->setFourDimArrayStatus(maxDispersionSession, component, sampleName, p, 1);
 		}
@@ -266,7 +266,7 @@ bool Statistic::cochranCriterionCalculate(FourDimArray * input, FourDimArray * d
 	return false;
 }
 
-bool Statistic::bartlettCriterionCalculate(FourDimArray * input, FourDimArray * dispersion, int component, int sampleName) {
+bool Statistic::bartlettCriterionCalculate(FourDimArray * input, FourDimArray * dispersion, const int component, const int sampleName) {
 	float averageDispersion = 0;
 	float sumOfDispersionLogarithm = 0;
 	float sumOfReverseAmountOfParallels = 0;
@@ -277,12 +277,12 @@ bool Statistic::bartlettCriterionCalculate(FourDimArray * input, FourDimArray * 
 	float maxDispersion = 0;
 	int maxSession = 0;
 	int tmpAmountOfParallels = 0;
-	for (int s = 0; s < dispersion->getAmountOfSession(); s++) {
+	for (int s = 0; s < dispersion->getAmountOfSessions(); s++) {
 		if ((dispersion->getFourDimArrayStatus(s, component, sampleName, 0) == 0) && (dispersion->getFourDimArrayExist(s, component, sampleName, 0))) {
-			averageDispersion += (dispersion->getFourDimArrayConcentration(s, component, sampleName, 0))*(input->getAmountOfParallel(s, component, sampleName) - 1);
-			sumOfDispersionLogarithm += (log(dispersion->getFourDimArrayConcentration(s, component, sampleName, 0)))*(input->getAmountOfParallel(s, component, sampleName) - 1);
-			sumOfReverseAmountOfParallels += (1 / (input->getAmountOfParallel(s, component, sampleName) - 1));
-			n += (input->getAmountOfParallel(s, component, sampleName) - 1);
+			averageDispersion += (dispersion->getFourDimArrayConcentration(s, component, sampleName, 0))*(input->getAmountOfParallels(s, component, sampleName) - 1);
+			sumOfDispersionLogarithm += (log(dispersion->getFourDimArrayConcentration(s, component, sampleName, 0)))*(input->getAmountOfParallels(s, component, sampleName) - 1);
+			sumOfReverseAmountOfParallels += (1 / (input->getAmountOfParallels(s, component, sampleName) - 1));
+			n += (input->getAmountOfParallels(s, component, sampleName) - 1);
 			if (dispersion->getFourDimArrayConcentration(s, component, sampleName, 0) > maxDispersion) {
 				maxDispersion = dispersion->getFourDimArrayConcentration(s, component, sampleName, 0);
 				maxSession = s;
@@ -291,11 +291,11 @@ bool Statistic::bartlettCriterionCalculate(FourDimArray * input, FourDimArray * 
 	}
 	averageDispersion /= n;
 	m = (n * log(averageDispersion)) - sumOfDispersionLogarithm;
-	c = 1 + (1 / (3 * (dispersion->getAmountOfSession(component, sampleName) - 1)))*((sumOfReverseAmountOfParallels) - (1/n));
+	c = 1 + (1 / (3 * (dispersion->getAmountOfSessions(component, sampleName) - 1)))*((sumOfReverseAmountOfParallels) - (1/n));
 	chi = m / c;
 
-	if (chi > chiDistributionValues(dispersion->getAmountOfSession(component, sampleName))) {
-		tmpAmountOfParallels = input->getAmountOfParallel(maxSession, component, sampleName);
+	if (chi > chiDistributionValues(dispersion->getAmountOfSessions(component, sampleName))) {
+		tmpAmountOfParallels = input->getAmountOfParallels(maxSession, component, sampleName);
 		for (int p = 0; p < tmpAmountOfParallels; p++) {
 				input->setFourDimArrayStatus(maxSession, component, sampleName, p, 2);
 		}
@@ -304,7 +304,7 @@ bool Statistic::bartlettCriterionCalculate(FourDimArray * input, FourDimArray * 
 	return false;
 }
 
-float Statistic::cochranCriticalValues(int amountOfSessions, int amountOfParallels) {
+float Statistic::cochranCriticalValues(const int amountOfSessions, const int amountOfParallels) {
 	float criticalValues[6][5] = {
 		{0.999, 0.975, 0.939, 0.906, 0.877},
 		{0.967, 0.871, 0.798, 0.746, 0.707},
@@ -316,7 +316,7 @@ float Statistic::cochranCriticalValues(int amountOfSessions, int amountOfParalle
 	return criticalValues[amountOfSessions - 2][amountOfParallels - 2];
 }
 
-float Statistic::chiDistributionValues(int amountOfdipersion) {
+float Statistic::chiDistributionValues(const int amountOfdipersion) {
 	float criticalValues[30] = {5.024, 7.378, 9.348, 11.14, 12.83, 14.45, 16.01, 17.53, 19.02, 20.48, 21.92, 23.34, 24.74, 26.12, 27.49, 28.85, 30.19, 31.53, 32.85, 34.17, 35.48, 36.78, 38.08, 39.36, 40.65, 41.92, 43.19, 44.46, 45.72, 46.98};
 	return (amountOfdipersion < 2) && (amountOfdipersion > 31) ? 0 : criticalValues[amountOfdipersion - 2];
 }//[2;31] дисперсий
@@ -327,12 +327,12 @@ FourDimArray * Statistic::possibleOutlierReport(FourDimArray * input) {
 	int outlierStatus = 0;
 	string content = "";
 	string criterion = "";
-	for (int s = 0; s < input->getAmountOfSession(); s++) {
-		for (int c = 0; c < input->getAmountOfComponent(); c++) {
-			for (int sN = 0; sN < input->getAmountOfSampleName(); sN++) {
-				for (int p = 0; p < input->getAmountOfParallel(); p++) {
+	for (int s = 0; s < input->getAmountOfSessions(); s++) {
+		for (int c = 0; c < input->getAmountOfComponents(); c++) {
+			for (int sN = 0; sN < input->getAmountOfSampleNames(); sN++) {
+				for (int p = 0; p < input->getAmountOfParallels(); p++) {
 					if (input->getFourDimArrayStatus(s, c, sN, p) != 0) {
-						p = input->getAmountOfParallel();
+						p = input->getAmountOfParallels();
 						outlierCounter++;
 					}
 				}
@@ -343,10 +343,10 @@ FourDimArray * Statistic::possibleOutlierReport(FourDimArray * input) {
 	sPtr = new FourDimArray(1, 1, outlierCounter, 0);
 	sPtr->setStrComponent(0, "");
 	outlierCounter = 0;
-	for (int s = 0; s < input->getAmountOfSession(); s++) {
-		for (int c = 0; c < input->getAmountOfComponent(); c++) {
-			for (int sN = 0; sN < input->getAmountOfSampleName(); sN++) {
-				for (int p = 0; p < input->getAmountOfParallel(); p++) {
+	for (int s = 0; s < input->getAmountOfSessions(); s++) {
+		for (int c = 0; c < input->getAmountOfComponents(); c++) {
+			for (int sN = 0; sN < input->getAmountOfSampleNames(); sN++) {
+				for (int p = 0; p < input->getAmountOfParallels(); p++) {
 					if ((input->getFourDimArrayStatus(s, c, sN, p) == 1) || (input->getFourDimArrayStatus(s, c, sN, p) == 10)) {
 						criterion = ", Criterion: Cochran";
 						outlierStatus = 10;
@@ -355,18 +355,18 @@ FourDimArray * Statistic::possibleOutlierReport(FourDimArray * input) {
 						criterion = ", Criterion: Bartlett";
 						outlierStatus = 20;
 					}
-					if ((input->getFourDimArrayStatus(s, c, sN, p) != 0) && (input->getAmountOfParallel(s, c, sN, "withoutStatus") > 2)) {
+					if ((input->getFourDimArrayStatus(s, c, sN, p) != 0) && (input->getAmountOfExistParallels(s, c, sN) > 2)) {
 						outlierparallel = Statistic::findOutlier(input, s, c, sN);
 						sPtr->setStrSampleName(outlierCounter, "Session №" + to_string(s + 1) + ", " + "sample: " + input->getStrSampleName(sN) + ", " + "component: " + input->getStrComponent(c) + ", " + "parallel №" + to_string(outlierparallel + 1) + ", concentration: " + to_string(input->getFourDimArrayConcentration(s, c, sN, outlierparallel)) + criterion );
 						input->setFourDimArrayStatus(s, c, sN, outlierparallel, outlierStatus);
 						outlierCounter++;
-						p = input->getAmountOfParallel();
+						p = input->getAmountOfParallels();
 					}
-					if ((input->getFourDimArrayStatus(s, c, sN, p) != 0) && (input->getAmountOfParallel(s, c, sN, "withoutStatus") == 2)) {
+					if ((input->getFourDimArrayStatus(s, c, sN, p) != 0) && (input->getAmountOfExistParallels(s, c, sN) == 2)) {
 						sPtr->setStrSampleName(outlierCounter, "Session №" + to_string(s + 1) + ", " + "sample: " + input->getStrSampleName(sN) + ", " + "component: " + input->getStrComponent(c) + ", " + "one among two parallels may be uncorrect, concentrations: " + to_string(input->getFourDimArrayConcentration(s, c, sN, 0)) + ", " + to_string(input->getFourDimArrayConcentration(s, c, sN, 1)) + criterion);
 						input->setFourDimArrayStatus(s, c, sN, outlierparallel, outlierStatus);
 						outlierCounter++;
-						p = input->getAmountOfParallel();
+						p = input->getAmountOfParallels();
 					}
 				}
 			}
@@ -375,16 +375,16 @@ FourDimArray * Statistic::possibleOutlierReport(FourDimArray * input) {
 	return sPtr;
 }
 
-int Statistic::findOutlier(FourDimArray * input, int session, int component, int sampleName) {
-	float *arrayAverage = new float[input->getAmountOfParallel()];
-	OneDimArray *arrayDispersion = new OneDimArray[input->getAmountOfParallel()];
+int Statistic::findOutlier(FourDimArray * input, const int session, const int component, const int sampleName) {
+	float *arrayAverage = new float[input->getAmountOfParallels()];
+	OneDimArray *arrayDispersion = new OneDimArray[input->getAmountOfParallels()];
 	float totalSum = 0;
 	float totalSumSqr = 0;
 	int countOfParallels = 0;
 	float minDispersion = 0;
 	int minParalleldispersion = 0;
-	for (int exception = 0; exception < input->getAmountOfParallel(); exception++) {
-		for (int p = 0; p < input->getAmountOfParallel(); p++) {
+	for (int exception = 0; exception < input->getAmountOfParallels(); exception++) {
+		for (int p = 0; p < input->getAmountOfParallels(); p++) {
 			if ((input->getFourDimArrayExist(session, component, sampleName, p)) && (exception != p)) {
 				totalSum += input->getFourDimArrayConcentration(session, component, sampleName, p);
 				countOfParallels++;
@@ -394,8 +394,8 @@ int Statistic::findOutlier(FourDimArray * input, int session, int component, int
 		totalSum = 0;
 		countOfParallels = 0;
 	}
-	for (int exception = 0; exception < input->getAmountOfParallel(); exception++) {
-		for (int p = 0; p < input->getAmountOfParallel(); p++) {
+	for (int exception = 0; exception < input->getAmountOfParallels(); exception++) {
+		for (int p = 0; p < input->getAmountOfParallels(); p++) {
 			if ((input->getFourDimArrayExist(session, component, sampleName, p)) && (exception != p)) {
 				totalSumSqr += pow(abs(input->getFourDimArrayConcentration(session, component, sampleName, p) - arrayAverage[exception]), 2);
 				countOfParallels++;
@@ -412,13 +412,13 @@ int Statistic::findOutlier(FourDimArray * input, int session, int component, int
 		totalSumSqr = 0;
 		countOfParallels = 0;
 	}
-	for (int i = 0; i < input->getAmountOfParallel(); i++) {
+	for (int i = 0; i < input->getAmountOfParallels(); i++) {
 		if (arrayDispersion[i].isChanged) {
 			minDispersion = arrayDispersion[i].value;
-			i = input->getAmountOfParallel();
+			i = input->getAmountOfParallels();
 		}
 	}
-	for (int i = 0; i < input->getAmountOfParallel(); i++) {
+	for (int i = 0; i < input->getAmountOfParallels(); i++) {
 		if ((arrayDispersion[i].value < minDispersion) && (arrayDispersion[i].isChanged)) {
 			minDispersion = arrayDispersion[i].value;
 			minParalleldispersion = i;
@@ -433,21 +433,21 @@ FourDimArray * Statistic::repeatabilityCalculate(FourDimArray * dispersion) {
 	int dispersionCounter = 0;
 
 	FourDimArray *sPtr = NULL;
-	sPtr = new FourDimArray(1, dispersion->getAmountOfComponent(), dispersion->getAmountOfSampleName(), 1);
+	sPtr = new FourDimArray(1, dispersion->getAmountOfComponents(), dispersion->getAmountOfSampleNames(), 1);
 
-	for (int c = 0; c < dispersion->getAmountOfComponent(); c++) {
+	for (int c = 0; c < dispersion->getAmountOfComponents(); c++) {
 		sPtr->setStrComponent(c, (dispersion->getStrComponent(c)));
 	}
 
-	for (int sN = 0; sN < dispersion->getAmountOfSampleName(); sN++) {
+	for (int sN = 0; sN < dispersion->getAmountOfSampleNames(); sN++) {
 		sPtr->setStrSampleName(sN, (dispersion->getStrSampleName(sN)));
 	}
 
-	for (int c = 0; c < dispersion->getAmountOfComponent(); c++) {
-		for (int sN = 0; sN < dispersion->getAmountOfSampleName(); sN++) {
+	for (int c = 0; c < dispersion->getAmountOfComponents(); c++) {
+		for (int sN = 0; sN < dispersion->getAmountOfSampleNames(); sN++) {
 			totalSumOfDispersion = 0;
 			dispersionCounter = 0;
-			for (int s = 0; s < dispersion->getAmountOfSession(); s++) {
+			for (int s = 0; s < dispersion->getAmountOfSessions(); s++) {
 				if ((dispersion->getFourDimArrayExist(s, c, sN, 0)) && (dispersion->getFourDimArrayStatus(s, c, sN, 0) == 0)) {
 						totalSumOfDispersion += dispersion->getFourDimArrayConcentration(s, c, sN, 0);
 						dispersionCounter++;
@@ -462,21 +462,21 @@ FourDimArray * Statistic::repeatabilityCalculate(FourDimArray * dispersion) {
 	return sPtr;
 }
 
-FourDimArray * Statistic::repeatabilityLimitCalculate(FourDimArray * repeatability, int amountOfParallelsInTestResult) {
+FourDimArray * Statistic::repeatabilityLimitCalculate(FourDimArray * repeatability, const int amountOfParallelsInTestResult) {
 
 	FourDimArray *sPtr = NULL;
-	sPtr = new FourDimArray(1, repeatability->getAmountOfComponent(), repeatability->getAmountOfSampleName(), 1);
+	sPtr = new FourDimArray(1, repeatability->getAmountOfComponents(), repeatability->getAmountOfSampleNames(), 1);
 
-	for (int c = 0; c < repeatability->getAmountOfComponent(); c++) {
+	for (int c = 0; c < repeatability->getAmountOfComponents(); c++) {
 		sPtr->setStrComponent(c, (repeatability->getStrComponent(c)));
 	}
 
-	for (int sN = 0; sN < repeatability->getAmountOfSampleName(); sN++) {
+	for (int sN = 0; sN < repeatability->getAmountOfSampleNames(); sN++) {
 		sPtr->setStrSampleName(sN, (repeatability->getStrSampleName(sN)));
 	}
 
-	for (int c = 0; c < repeatability->getAmountOfComponent(); c++) {
-		for (int sN = 0; sN < repeatability->getAmountOfSampleName(); sN++) {
+	for (int c = 0; c < repeatability->getAmountOfComponents(); c++) {
+		for (int sN = 0; sN < repeatability->getAmountOfSampleNames(); sN++) {
 			if ((repeatability->getFourDimArrayExist(0, c, sN, 0)) && (repeatability->getFourDimArrayStatus(0, c, sN, 0) == 0) && (amountOfParallelsInTestResult > 0) && (amountOfParallelsInTestResult <= 5)){
 				if (amountOfParallelsInTestResult > 1) {
 					sPtr->setFourDimArrayConcentration(0, c, sN, 0, ((repeatability->getFourDimArrayConcentration(0, c, sN, 0)) * qTable(amountOfParallelsInTestResult)));
@@ -493,7 +493,7 @@ FourDimArray * Statistic::repeatabilityLimitCalculate(FourDimArray * repeatabili
 
 bool Statistic::grubbsCriterionCalculate(FourDimArray * input, FourDimArray * average) {
 	OneDimArray * arrayAverage = NULL;
-	arrayAverage = new OneDimArray[input->getAmountOfSession()];
+	arrayAverage = new OneDimArray[input->getAmountOfSessions()];
 	float minAverage = 0;
 	float maxAverage = 0;
 	float totalSumAverages = 0;
@@ -506,21 +506,21 @@ bool Statistic::grubbsCriterionCalculate(FourDimArray * input, FourDimArray * av
 	bool firstRealValue = false;
 	bool wasChanged = false;
 	
-	for (int c = 0; c < average->getAmountOfComponent(); c++) {
-		for (int sN = 0; sN < average->getAmountOfSampleName(); sN++) {
-			if ((input->getAmountOfSession(c, sN) > 2) && (input->getAmountOfSession(c, sN) < 41)) {
-				for (int i = 0; i < input->getAmountOfSession(); i++) {
+	for (int c = 0; c < average->getAmountOfComponents(); c++) {
+		for (int sN = 0; sN < average->getAmountOfSampleNames(); sN++) {
+			if ((input->getAmountOfSessions(c, sN) > 2) && (input->getAmountOfSessions(c, sN) < 41)) {
+				for (int i = 0; i < input->getAmountOfSessions(); i++) {
 					arrayAverage[i].value = 0;
 					arrayAverage[i].isChanged = false;
 				}
-				for (int s = 0; s < input->getAmountOfSession(); s++) {
+				for (int s = 0; s < input->getAmountOfSessions(); s++) {
 					if ((average->getFourDimArrayExist(s, c, sN, 0)) && (average->getFourDimArrayStatus(s, c, sN, 0) == 0)) {
 						arrayAverage[s].value = average->getFourDimArrayConcentration(s, c, sN, 0);
 						arrayAverage[s].isChanged = true;
 					}
 				}
 				firstRealValue = false;
-				for (int s = 0; s < input->getAmountOfSession(); s++) {
+				for (int s = 0; s < input->getAmountOfSessions(); s++) {
 					if ((arrayAverage[s].isChanged) && (!firstRealValue)) {
 						minAverage = arrayAverage[s].value;
 						firstRealValue = true;
@@ -534,7 +534,7 @@ bool Statistic::grubbsCriterionCalculate(FourDimArray * input, FourDimArray * av
 				sumOfSqDifferences = 0;
 				minPosition = 0;
 				maxPosition = 0;
-				for (int s = 0; s < input->getAmountOfSession(); s++) {
+				for (int s = 0; s < input->getAmountOfSessions(); s++) {
 					if (arrayAverage[s].isChanged) {
 						totalSumAverages += arrayAverage[s].value;
 						counterAverages++;
@@ -549,21 +549,21 @@ bool Statistic::grubbsCriterionCalculate(FourDimArray * input, FourDimArray * av
 					}
 				}
 				averageOfAverages = totalSumAverages / counterAverages;
-				for (int s = 0; s < input->getAmountOfSession(); s++) {
+				for (int s = 0; s < input->getAmountOfSessions(); s++) {
 					if (arrayAverage[s].isChanged) {
 						sumOfSqDifferences += pow(abs(arrayAverage[s].value - averageOfAverages), 2);
 					}
 				}
 				standardDeviation = sqrt(sumOfSqDifferences / (counterAverages - 1));
 				if (((maxAverage - averageOfAverages) / standardDeviation) > criticalValuesGrubbsCriterion(counterAverages)) {
-					for (int p = 0; p < input->getAmountOfParallel(); p++) {
+					for (int p = 0; p < input->getAmountOfParallels(); p++) {
 						if ((input->getFourDimArrayExist(maxPosition, c, sN, p)) && (input->getFourDimArrayStatus(maxPosition, c, sN, p) == 0)) {
 							input->setFourDimArrayStatus(maxPosition, c, sN, p, 42);
 						}
 					}
 				}
 				if (((averageOfAverages - minAverage) / standardDeviation) > criticalValuesGrubbsCriterion(counterAverages)) {
-					for (int p = 0; p < input->getAmountOfParallel(); p++) {
+					for (int p = 0; p < input->getAmountOfParallels(); p++) {
 						if ((input->getFourDimArrayExist(minPosition, c, sN, p)) && (input->getFourDimArrayStatus(minPosition, c, sN, p) == 0)) {
 							input->setFourDimArrayStatus(minPosition, c, sN, p, 41);
 							wasChanged = true;
@@ -572,8 +572,8 @@ bool Statistic::grubbsCriterionCalculate(FourDimArray * input, FourDimArray * av
 				}
 			}
 			else {
-				for (int s = 0; s < input->getAmountOfSession(); s++) {
-					for (int p = 0; p < input->getAmountOfParallel(); p++) {
+				for (int s = 0; s < input->getAmountOfSessions(); s++) {
+					for (int p = 0; p < input->getAmountOfParallels(); p++) {
 						if ((input->getFourDimArrayExist(s, c, sN, p)) && (input->getFourDimArrayStatus(s, c, sN, p) == 0)) {
 							input->setFourDimArrayStatus(s, c, sN, p, 43);
 							wasChanged = true;
@@ -586,17 +586,17 @@ bool Statistic::grubbsCriterionCalculate(FourDimArray * input, FourDimArray * av
 	return wasChanged;
 }
 
-float Statistic::criticalValuesGrubbsCriterion(int amountOfAverages) {
+float Statistic::criticalValuesGrubbsCriterion(const int amountOfAverages) {
 	float criticalValuesGrubbsCriterion[38] = {1.155, 1.481, 1.715, 1.887, 2.020, 2.126, 2.215, 2.29, 2.355, 2.412, 2.462, 2.507, 2.549, 2.585, 2.62, 2.651, 2.681, 2.709, 2.733, 2.758, 2.781, 2.802, 2.822, 2.841, 2.859, 2.876, 2.893, 2.908, 2.924, 2.938, 2.952, 2.965, 2.979, 2.991, 3.003, 3.014, 3.025, 3.036};
 	return criticalValuesGrubbsCriterion[amountOfAverages - 3];
 }
 
-float Statistic::qTable(int amountOfParallelsInTestResult) {
+float Statistic::qTable(const int amountOfParallelsInTestResult) {
 	float qTable[4] = { 2.77, 3.31, 3.63, 3.86 };
 	return qTable[amountOfParallelsInTestResult - 2];
 }
 
-FourDimArray * Statistic::reproducibilityCalculate(FourDimArray * input, FourDimArray * average, FourDimArray * averageOfAverages, FourDimArray * repeatability, int amountOfParallelsInTestResult){
+FourDimArray * Statistic::reproducibilityCalculate(FourDimArray * input, FourDimArray * average, FourDimArray * averageOfAverages, FourDimArray * repeatability, const int amountOfParallelsInTestResult){
 	float sumOfSqDifferences = 0;
 	int sqDifferencesCounter = 0;
 	float dispersion = 0;
@@ -604,25 +604,25 @@ FourDimArray * Statistic::reproducibilityCalculate(FourDimArray * input, FourDim
 	int minAmountOfParallel = 0;
 
 	FourDimArray *sPtr = NULL;
-	sPtr = new FourDimArray(1, average->getAmountOfComponent(), average->getAmountOfSampleName(), 1);
+	sPtr = new FourDimArray(1, average->getAmountOfComponents(), average->getAmountOfSampleNames(), 1);
 
-	for (int c = 0; c < average->getAmountOfComponent(); c++) {
+	for (int c = 0; c < average->getAmountOfComponents(); c++) {
 		sPtr->setStrComponent(c, (average->getStrComponent(c)));
 	}
 
-	for (int sN = 0; sN < average->getAmountOfSampleName(); sN++) {
+	for (int sN = 0; sN < average->getAmountOfSampleNames(); sN++) {
 		sPtr->setStrSampleName(sN, (average->getStrSampleName(sN)));
 	}
 
-	for (int c = 0; c < average->getAmountOfComponent(); c++) {
-		for (int sN = 0; sN < average->getAmountOfSampleName(); sN++) {
-			if (average->getAmountOfSession(c, sN) > 2) {
+	for (int c = 0; c < average->getAmountOfComponents(); c++) {
+		for (int sN = 0; sN < average->getAmountOfSampleNames(); sN++) {
+			if (average->getAmountOfSessions(c, sN) > 2) {
 				sumOfSqDifferences = 0;
 				sqDifferencesCounter = 0;
 				dispersion = 0;
 				standartDeviation = 0;
 				minAmountOfParallel = 0;
-				for (int s = 0; s < average->getAmountOfSession(); s++) {
+				for (int s = 0; s < average->getAmountOfSessions(); s++) {
 					if ((average->getFourDimArrayExist(s, c, sN, 0)) && (average->getFourDimArrayStatus(s, c, sN, 0) == 0)) {
 						sumOfSqDifferences += pow(abs(average->getFourDimArrayConcentration(s, c, sN, 0) - averageOfAverages->getFourDimArrayConcentration(0, c, sN, 0)), 2);
 						sqDifferencesCounter++;
@@ -631,15 +631,15 @@ FourDimArray * Statistic::reproducibilityCalculate(FourDimArray * input, FourDim
 				if (sqDifferencesCounter > 1) {
 					dispersion = sumOfSqDifferences / (sqDifferencesCounter - 1);
 				}
-				for (int s = 0; s < input->getAmountOfSession(); s++) {
-					if ((input->getAmountOfParallel(s, c, sN) > 0)) {
-						minAmountOfParallel = input->getAmountOfParallel(s, c, sN);
-						s = input->getAmountOfSession();
+				for (int s = 0; s < input->getAmountOfSessions(); s++) {
+					if ((input->getAmountOfParallels(s, c, sN) > 0)) {
+						minAmountOfParallel = input->getAmountOfParallels(s, c, sN);
+						s = input->getAmountOfSessions();
 					}
 				}
-				for (int s = 0; s < input->getAmountOfSession(); s++) {
-					if ((input->getAmountOfParallel(s, c, sN) < minAmountOfParallel) && (input->getAmountOfParallel(s, c, sN) != 0)) {
-						minAmountOfParallel = input->getAmountOfParallel(s, c, sN);
+				for (int s = 0; s < input->getAmountOfSessions(); s++) {
+					if ((input->getAmountOfParallels(s, c, sN) < minAmountOfParallel) && (input->getAmountOfParallels(s, c, sN) != 0)) {
+						minAmountOfParallel = input->getAmountOfParallels(s, c, sN);
 					}
 				}
 			
@@ -662,20 +662,20 @@ FourDimArray * Statistic::reproducibilityCalculate(FourDimArray * input, FourDim
 	return sPtr;
 }
 
-FourDimArray * Statistic::reproducibilityLimitCalculate(FourDimArray * reproducibility, int amountOfParallelsInTestResult) {
+FourDimArray * Statistic::reproducibilityLimitCalculate(FourDimArray * reproducibility, const int amountOfParallelsInTestResult) {
 	FourDimArray *sPtr = NULL;
-	sPtr = new FourDimArray(1, reproducibility->getAmountOfComponent(), reproducibility->getAmountOfSampleName(), 1);
+	sPtr = new FourDimArray(1, reproducibility->getAmountOfComponents(), reproducibility->getAmountOfSampleNames(), 1);
 
-	for (int c = 0; c < reproducibility->getAmountOfComponent(); c++) {
+	for (int c = 0; c < reproducibility->getAmountOfComponents(); c++) {
 		sPtr->setStrComponent(c, (reproducibility->getStrComponent(c)));
 	}
 
-	for (int sN = 0; sN < reproducibility->getAmountOfSampleName(); sN++) {
+	for (int sN = 0; sN < reproducibility->getAmountOfSampleNames(); sN++) {
 		sPtr->setStrSampleName(sN, (reproducibility->getStrSampleName(sN)));
 	}
 
-	for (int c = 0; c < reproducibility->getAmountOfComponent(); c++) {
-		for (int sN = 0; sN < reproducibility->getAmountOfSampleName(); sN++) {
+	for (int c = 0; c < reproducibility->getAmountOfComponents(); c++) {
+		for (int sN = 0; sN < reproducibility->getAmountOfSampleNames(); sN++) {
 			if ((reproducibility->getFourDimArrayExist(0, c, sN, 0)) && (reproducibility->getFourDimArrayStatus(0, c, sN, 0) == 0) && (amountOfParallelsInTestResult > 0) && (amountOfParallelsInTestResult <= 5)) {
 				if (amountOfParallelsInTestResult > 1) {
 					sPtr->setFourDimArrayConcentration(0, c, sN, 0, ((reproducibility->getFourDimArrayConcentration(0, c, sN, 0)) * qTable(amountOfParallelsInTestResult)));
@@ -696,23 +696,23 @@ FourDimArray * Statistic::studentTTestCalculate(FourDimArray * average, FourDimA
 	float averageOfDispersions = 0;
 	
 	FourDimArray *sPtr = NULL;
-	sPtr = new FourDimArray(1, average->getAmountOfComponent(), average->getAmountOfSampleName(), 1);
+	sPtr = new FourDimArray(1, average->getAmountOfComponents(), average->getAmountOfSampleNames(), 1);
 
-	for (int c = 0; c < average->getAmountOfComponent(); c++) {
+	for (int c = 0; c < average->getAmountOfComponents(); c++) {
 		sPtr->setStrComponent(c, (average->getStrComponent(c)));
 	}
 
-	for (int sN = 0; sN < average->getAmountOfSampleName(); sN++) {
+	for (int sN = 0; sN < average->getAmountOfSampleNames(); sN++) {
 		sPtr->setStrSampleName(sN, (average->getStrSampleName(sN)));
 	}
 
-	for (int c = 0; c < average->getAmountOfComponent(); c++) {
-		for (int sN = 0; sN < average->getAmountOfSampleName(); sN++) {
+	for (int c = 0; c < average->getAmountOfComponents(); c++) {
+		for (int sN = 0; sN < average->getAmountOfSampleNames(); sN++) {
 			averageCounter = 0;
 			sumOfSqDifferences = 0;
 			averageOfDispersions = 0;
 			if ((averageOfAverages->getFourDimArrayExist(0, c, sN, 0)) && (averageOfAverages->getFourDimArrayStatus(0, c, sN, 0) == 0) && (uncertainties->getFourDimArrayExist(0, c, sN, 0))) {
-				for (int s = 0; s < average->getAmountOfSession(); s++) {
+				for (int s = 0; s < average->getAmountOfSessions(); s++) {
 					if ((average->getFourDimArrayExist(s, c, sN, 0)) && (average->getFourDimArrayStatus(s, c, sN, 0) == 0)) {
 						sumOfSqDifferences += pow(abs(average->getFourDimArrayConcentration(s, c, sN, 0) - averageOfAverages->getFourDimArrayConcentration(0, c, sN, 0)), 2);
 						averageCounter++;
@@ -730,7 +730,7 @@ FourDimArray * Statistic::studentTTestCalculate(FourDimArray * average, FourDimA
 	return sPtr;
 }
 
-float Statistic::percentagePointsOfStudentDistribution(int amountOfExistAverages) {
+float Statistic::percentagePointsOfStudentDistribution(const int amountOfExistAverages) {
 	float pointsOfStudentDistribution[30] = {12.71, 4.3, 3.18, 2.78, 2.57, 2.45, 2.37, 2.31, 2.26, 2.23, 2.2, 2.18, 2.16, 2.15, 2.14, 2.12, 2.11, 2.10, 2.09, 2.09, 2.08, 2.07, 2.07, 2.06, 2.06, 2.06, 2.05, 2.05, 2.04, 2.04};
 	return pointsOfStudentDistribution[amountOfExistAverages - 2];
 }
@@ -742,24 +742,24 @@ FourDimArray * Statistic::truenessCalculate(FourDimArray * average, FourDimArray
 	float trueness = 0;
 
 	FourDimArray *sPtr = NULL;
-	sPtr = new FourDimArray(1, average->getAmountOfComponent(), average->getAmountOfSampleName(), 1);
+	sPtr = new FourDimArray(1, average->getAmountOfComponents(), average->getAmountOfSampleNames(), 1);
 
-	for (int c = 0; c < average->getAmountOfComponent(); c++) {
+	for (int c = 0; c < average->getAmountOfComponents(); c++) {
 		sPtr->setStrComponent(c, (average->getStrComponent(c)));
 	}
 
-	for (int sN = 0; sN < average->getAmountOfSampleName(); sN++) {
+	for (int sN = 0; sN < average->getAmountOfSampleNames(); sN++) {
 		sPtr->setStrSampleName(sN, (average->getStrSampleName(sN)));
 	}
 
-	for (int c = 0; c < average->getAmountOfComponent(); c++) {
-		for (int sN = 0; sN < average->getAmountOfSampleName(); sN++) {
+	for (int c = 0; c < average->getAmountOfComponents(); c++) {
+		for (int sN = 0; sN < average->getAmountOfSampleNames(); sN++) {
 			averageCounter = 0;
 			sumOfSqDifferences = 0;
 			averageOfDispersions = 0;
 			trueness = 0;
 			if ((student->getFourDimArrayExist(0, c, sN, 0)) && (student->getFourDimArrayStatus(0, c, sN, 0) == 0) && (bias->getFourDimArrayExist(0, c, sN, 0)) && (bias->getFourDimArrayStatus(0, c, sN, 0) == 0) && (uncertainties->getFourDimArrayExist(0, c, sN, 0))) {
-				for (int s = 0; s < average->getAmountOfSession(); s++) {
+				for (int s = 0; s < average->getAmountOfSessions(); s++) {
 					if ((average->getFourDimArrayExist(s, c, sN, 0)) && (average->getFourDimArrayStatus(s, c, sN, 0) == 0)) {
 						sumOfSqDifferences += pow(abs(average->getFourDimArrayConcentration(s, c, sN, 0) - averageOfAverages->getFourDimArrayConcentration(0, c, sN, 0)), 2);
 						averageCounter++;
@@ -789,18 +789,18 @@ FourDimArray * Statistic::accuracyCalculate(FourDimArray * average, FourDimArray
 	float accuracy = 0;
 
 	FourDimArray *sPtr = NULL;
-	sPtr = new FourDimArray(1, average->getAmountOfComponent(), average->getAmountOfSampleName(), 1);
+	sPtr = new FourDimArray(1, average->getAmountOfComponents(), average->getAmountOfSampleNames(), 1);
 
-	for (int c = 0; c < average->getAmountOfComponent(); c++) {
+	for (int c = 0; c < average->getAmountOfComponents(); c++) {
 		sPtr->setStrComponent(c, (average->getStrComponent(c)));
 	}
 
-	for (int sN = 0; sN < average->getAmountOfSampleName(); sN++) {
+	for (int sN = 0; sN < average->getAmountOfSampleNames(); sN++) {
 		sPtr->setStrSampleName(sN, (average->getStrSampleName(sN)));
 	}
 
-	for (int c = 0; c < average->getAmountOfComponent(); c++) {
-		for (int sN = 0; sN < average->getAmountOfSampleName(); sN++) {
+	for (int c = 0; c < average->getAmountOfComponents(); c++) {
+		for (int sN = 0; sN < average->getAmountOfSampleNames(); sN++) {
 			totalSumOfAverages = 0;
 			averageCounter = 0;
 			sumOfSqDifferences = 0;
@@ -808,7 +808,7 @@ FourDimArray * Statistic::accuracyCalculate(FourDimArray * average, FourDimArray
 			truenessStDev = 0;
 			accuracy = 0;
 			if ((student->getFourDimArrayExist(0, c, sN, 0)) && (student->getFourDimArrayStatus(0, c, sN, 0) == 0) && (bias->getFourDimArrayExist(0, c, sN, 0)) && (bias->getFourDimArrayStatus(0, c, sN, 0) == 0) && (uncertainties->getFourDimArrayExist(0, c, sN, 0))) {
-				for (int s = 0; s < average->getAmountOfSession(); s++) {
+				for (int s = 0; s < average->getAmountOfSessions(); s++) {
 					if ((average->getFourDimArrayExist(s, c, sN, 0)) && (average->getFourDimArrayStatus(s, c, sN, 0) == 0)) {
 						sumOfSqDifferences += pow(abs(average->getFourDimArrayConcentration(s, c, sN, 0) - averageOfAverages->getFourDimArrayConcentration(0, c, sN, 0)), 2);
 						averageCounter++;
