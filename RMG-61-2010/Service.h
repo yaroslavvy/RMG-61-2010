@@ -12,41 +12,10 @@ class Service {
 public:
 	Service();
 	static void callMenu();
-	template<class T>
-	static bool isPtrNull(T *sPtr);
-	static string numberEnding(int number);
+	static string numberEnding(const int number);
 	static bool saveReport(FourDimArray* fourDimArrayPtr, ...);
 	static void writeOneFourDimArray(FourDimArray *fourDimArrayPtr, ofstream & fout);
 	static bool isIntegerFromString(const string possibleInteger);
 	~Service();
-protected:
-	static string item;
-	static int command;
-	static int column;
-	static int row;
-	static int tmp;
-	static string fileName;
-	static List *startPtr;
-	static DataTable *newDataTable;
-	//static DataTable **sessionDataTablesArray;
-	static FourDimArray *fourDimArrayPtr;
-	static FourDimArray *fourDimArrayConcentrationsPtr;
-	static FourDimArray *fourDimArrayUncertaintiesPtr;
-	static FourDimArray *averageFourDimArrayPtr;
-	static FourDimArray *dispersionFourDimArrayPtr;
-	static FourDimArray *possibleOutlierFourDimArrayPtr;
-	static FourDimArray *repeatabilityFourDimArrayPtr;
-	static FourDimArray *repeatabilityLimitFourDimArrayPtr;
-	static FourDimArray *reproducibilityFourDimArrayPtr;
-	static FourDimArray *reproducibilityLimitFourDimArrayPtr;
-	static int amountOfParallelsInTestResult;
-	static FourDimArray * fourDimArrayGrubbsCriterionPtr;
-	static FourDimArray * averageFourDimArrayGrubbsCriterionPtr;
-	static FourDimArray * averageOfAveragesFourDimArrayGrubbsCriterionPtr;
-	static FourDimArray * biasFourDimArrayGrubbsCriterionPtr;
-	static FourDimArray * studentTTestFourDimArrayPtr;
-	static FourDimArray * truenessFourDimArrayPtr;
-	static FourDimArray * accuracyFourDimArrayPtr;
-
 };
 #endif // !SERVICE_H

@@ -5,17 +5,14 @@ class List
 {
 public:
 	List();
-	void printList(List *startPtr);
 	static void nextRow();
-	static void insertElement(List **startPtr, string item);
-	static bool readFromFile(List **startPtr, string fileName);
+	static void insertElement(List **startPtr, const string &item);
+	static bool readFromFile(List **startPtr, const string &fileName);
 	int getElementRow();
 	int getElementColumn();
 	string getElementValue();
-	string getElementValue(int column, int row);
-	void setElementValue(string &item);
-	void printElementValue(int elementColumn, int elementRow);
-	void saveInFile(List *startPtr, string &fileName);
+	string getElementValue(const int column,const int row);
+	void setElementValue(const string &item);
 	static int getCommonColumn();
 	static int getMaxCommonColumn();
 	static int getCommonRow();

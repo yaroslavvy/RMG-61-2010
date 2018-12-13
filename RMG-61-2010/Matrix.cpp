@@ -18,23 +18,24 @@ using std::ofstream;
 #include "Matrix.h"
 
 template <class T>
-Matrix<T>::Matrix(int columns, int rows) {
+Matrix<T>::Matrix(const int columns, const int rows) {
 	setAmountOfMatrixColumns(columns);
 	setAmountOfMatrixRows(rows);
 	matrix = new T *[getAmountOfMatrixRows()];
 	for (int i = 0; i < getAmountOfMatrixRows(); i++) {
 		(*(matrix + i)) = new T[getAmountOfMatrixColumns()];
 	}
+	return;
 }
 
 template <class T>
-void Matrix<T>::setAmountOfMatrixColumns(int item) {
+void Matrix<T>::setAmountOfMatrixColumns(const int item) {
 	amountOfMatrixColumns = item;
 	return;
 }
 
 template <class T>
-void Matrix<T>::setAmountOfMatrixRows(int item) {
+void Matrix<T>::setAmountOfMatrixRows(const int item) {
 	amountOfMatrixRows = item;
 	return;
 }
@@ -50,15 +51,17 @@ int Matrix<T>::getAmountOfMatrixRows() {
 }
 
 template <class T>
-void Matrix<T>::setMatrixValue(int column, int row, T item) {
+void Matrix<T>::setMatrixValue(const int column, const int row, const T item) {
 	*(*(matrix + row) + column) = item;
+	return;
 }
 
 template <class T>
-T Matrix<T>::getMatrixValue(int column, int row) {
+T Matrix<T>::getMatrixValue(const int column, const int row) {
 	return *(*(matrix + row) + column);
 }
 
 template <class T>
 Matrix<T>::~Matrix() {
+
 }

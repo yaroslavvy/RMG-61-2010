@@ -20,18 +20,11 @@ using std::stof;
 
 #include "DataTable.h"
 
-DataTable::DataTable(int columns, int rows)
-	: Matrix<string>(columns, rows)
-{
+DataTable::DataTable(const int columns, const int rows)
+	: Matrix<string>(columns, rows) {
 	componentArray = new string[columns];
 	nameArray = new string[rows];
-
 }
-
-void DataTable::extractConcentrationsFromKedaStructureToTable(List *startPtr) {
-	return;//позже дописать
-}
-
 
 void DataTable::extractConcentrationsFromFormattedStructureToTable(List *startPtr) {
 	string tmp;
@@ -50,69 +43,33 @@ void DataTable::extractConcentrationsFromFormattedStructureToTable(List *startPt
 			setMatrixValue(c - 2, r - 2, tmp);
 		}
 	}
-	cout << endl << "Data has been extracted from list to table" << endl;
+	cout << endl << "Data has been extracted" << endl;
 	return;
 }
 
-void DataTable::extractConcentrationsFromTableToFormattedStructure(List **startPtr) {
-	string i("");
-	List::insertElement(startPtr, i);
-	for (int i = 0; i < Matrix<string>::getAmountOfMatrixColumns(); i++) {
-		List::insertElement(startPtr, getComponentArray(i));
-	}
-	List::nextRow();
-	List::insertElement(startPtr, getNameArray(0));
-	for (int r = 0; r < Matrix<string>::getAmountOfMatrixRows(); r++) {
-		for (int c = 0; c < Matrix<string>::getAmountOfMatrixColumns(); c++) {
-			List::insertElement(startPtr, getMatrixValue(c, r));
-		}
-		List::nextRow();
-		if (r < (Matrix<string>::getAmountOfMatrixRows() - 1)) {
-			List::insertElement(startPtr, getNameArray(r + 1));
-		}
-	}
-	cout << endl << "Data has been extracted from table to list" << endl;
-	return;
-}
-
-void DataTable::printDataTable() {
-	cout << "\t\t";
-	for (int j = 0; j < this->getAmountOfMatrixColumns(); j++) {
-		cout << this->getComponentArray(j) << "\t\t";
-	}
-	cout << endl;
-
-	for (int i = 0; i < this->getAmountOfMatrixRows(); i++) {
-		cout << this->getNameArray(i) << "\t\t";
-		for (int j = 0; j < this->getAmountOfMatrixColumns(); j++) {
-			cout << this->getMatrixValue(j, i) << "\t\t";
-		}
-		cout << endl;
-	}
-
-	cout << "amountOfMatrixColumns: " << getAmountOfMatrixColumns() << endl;
-	cout << "amountOfMatrixRows: " << getAmountOfMatrixRows() << endl;
-
-	return;
-}
-
-string DataTable::getComponentArray(int column) {
+string DataTable::getComponentArray(const int column) {
 	return *(componentArray + column);
 }
 
-void DataTable::setComponentArray(int column, string item) {
+void DataTable::setComponentArray(const int column, const string item) {
 	*(componentArray + column) = item;
 	return;
 }
 
-string DataTable::getNameArray(int row) {
+string DataTable::getNameArray(const int row) {
 	return *(nameArray + row);
 }
 
-void DataTable::setNameArray(int row, string name) {
+void DataTable::setNameArray(const int row, const string name) {
 	*(nameArray + row) = name;
 	return;
 }
 
 DataTable::~DataTable() {
+	/*for (int i = 0; i < getAmountOfMatrixRows(); i++) {
+		delete[](*(matrix + i));
+	}
+	delete[] matrix;
+	delete[] componentArray;
+	delete[] nameArray;*/
 }

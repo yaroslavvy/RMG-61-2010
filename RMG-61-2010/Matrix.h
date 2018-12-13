@@ -4,13 +4,13 @@
 template <class T>
 class Matrix {
 public:
-	Matrix(int columns, int rows);
-	void setAmountOfMatrixColumns(int item);
-	void setAmountOfMatrixRows(int item);
+	Matrix(const int columns, const int rows);
+	void setAmountOfMatrixColumns(const int item);
+	void setAmountOfMatrixRows(const int item);
 	int getAmountOfMatrixColumns();
 	int getAmountOfMatrixRows();
-	void setMatrixValue(int column, int row, T item);
-	T getMatrixValue(int column, int row);
+	void setMatrixValue(const int column,const int row, const T item);
+	T getMatrixValue(const int column, const int row);
 	~Matrix();
 protected:
 	int amountOfMatrixColumns;

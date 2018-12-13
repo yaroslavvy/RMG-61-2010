@@ -33,24 +33,6 @@ List::List() {
 	commonColumn > maxCommonColumn ? maxCommonColumn = commonColumn : maxCommonColumn = maxCommonColumn;
 }
 
-void List::printList(List *sPtr) {
-	int tmpRow = 0;
-	cout << "List:" << endl;
-	while (sPtr != NULL) {
-		if (sPtr->getElementRow() > tmpRow) {
-			cout << endl;
-			cout << sPtr->getElementValue();
-			tmpRow = sPtr->getElementRow();
-		}
-		else {
-			cout << "\t";
-			cout << sPtr->getElementValue();
-		}
-		sPtr = sPtr->nextPtr;
-	}
-	return;
-}
-
 int List::getElementRow() {
 	return elementRow;
 }
@@ -63,7 +45,7 @@ string List::getElementValue() {
 	return elementValue;
 }
 
-string List::getElementValue(int column, int row) {
+string List::getElementValue(const int column, const int row) {
 	List *sPtr = this;
 	while (((sPtr->getElementColumn()) != column) || ((sPtr->getElementRow()) != row)) {
 		sPtr = sPtr->nextPtr;
@@ -77,67 +59,26 @@ string List::getElementValue(int column, int row) {
 	return sPtr->getElementValue();
 }
 
-void List::setElementValue(string &item) {
+void List::setElementValue(const string &item) {
 	elementValue = item;
 	return;
 }
 
-void List::printElementValue(int column, int row) {
-	List *sPtr = this;
-	cout << "Element of List (" << column << ", " << row << ") is: ";
-
-	while (((sPtr->getElementColumn()) != column) || ((sPtr->getElementRow()) != row)) {
-		sPtr = sPtr->nextPtr;
-		if (sPtr == NULL) {
-			cout << "hasn't found" << endl << endl;
-			return;
-		}
-	}
-	cout << sPtr->getElementValue() << endl << endl;
-	return;
-}
-
-void List::saveInFile(List *sPtr, string &fileName) {
-	ofstream fout;
-	fout.open(fileName);
-	int tmpRow = 1;
-	while (sPtr != NULL) {
-		if (sPtr->getElementRow() > tmpRow) {
-			fout << "\n";
-			fout << sPtr->getElementValue();
-			tmpRow = sPtr->getElementRow();
-		}
-		else {
-			if (((sPtr->elementColumn) != 1) || ((sPtr->elementRow) != 1)) {
-				fout << ";";
-			}
-			fout << sPtr->getElementValue();
-		}
-		sPtr = sPtr->nextPtr;
-	}
-	fout << "\n";
-	fout.close();
-	return;
-}
-
-void List::insertElement(List **sPtr, string item) {
-	List *newPtr = NULL;
-	List *lastPtr = NULL;
-	newPtr = new List;
+void List::insertElement(List **sPtr, const string &item) {
+	List *newPtr = new List;
 	newPtr->setElementValue(item);
 	newPtr->nextPtr = NULL;
 	if (*sPtr == NULL) {
 		*sPtr = newPtr;
 		List::commonRow = 1;
-		List::commonColumn = 0;
+		List::commonColumn = 1;
 		List::maxCommonColumn = 0;
-		commonColumn++;
 		newPtr->elementRow = commonRow;
 		newPtr->elementColumn = commonColumn;
 		commonColumn > maxCommonColumn ? maxCommonColumn = commonColumn : maxCommonColumn = maxCommonColumn;
 	}
 	else {
-		lastPtr = *sPtr;
+		List *lastPtr = *sPtr;
 		while (lastPtr->nextPtr != NULL) {
 			lastPtr = lastPtr->nextPtr;
 		}
@@ -146,7 +87,7 @@ void List::insertElement(List **sPtr, string item) {
 	return;
 }
 
-bool List::readFromFile(List **sPtr, string fileName) {
+bool List::readFromFile(List **sPtr, const string &fileName) {
 	ifstream fin;
 	fin.open(fileName);
 	if (!fin.is_open()) {
@@ -194,5 +135,8 @@ List * List::getNextPtr() {
 }
 
 List::~List() {
-	delete nextPtr;
+	if (nextPtr != NULL) {
+		delete nextPtr;
+		nextPtr = NULL;
+	}
 }

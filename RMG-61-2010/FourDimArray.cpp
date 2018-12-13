@@ -18,7 +18,7 @@ using std::to_string;
 
 #include "FourDimArray.h"
 
-FourDimArray::FourDimArray(int session, int component, int sampleName, int parallel) {
+FourDimArray::FourDimArray(const int session, const int component, const int sampleName, const int parallel) {
 	setAmountOfSession(session);
 	setAmountOfComponent(component);
 	setAmountOfSampleName(sampleName);
@@ -26,9 +26,6 @@ FourDimArray::FourDimArray(int session, int component, int sampleName, int paral
 	componentArray = new string[getAmountOfComponent()];
 	sampleNameArray = new string[getAmountOfSampleName()];
 	setDescription("Some four-dimension array with some data");
-	tmpFloat = 1.000;
-	tmpInt = 1;
-	tmpBool = true;
 
 	for (int i = 0; i < getAmountOfComponent(); i++) {
 		setStrComponent(i, i);
@@ -60,32 +57,32 @@ FourDimArray::FourDimArray(int session, int component, int sampleName, int paral
 	}
 }
 
-void FourDimArray::setAmountOfSession(int item) {
+void FourDimArray::setAmountOfSession(const int item) {
 	amountOfSession = item;
 	return;
 }
 
-void FourDimArray::setAmountOfComponent(int item) {
+void FourDimArray::setAmountOfComponent(const int item) {
 	amountOfComponent = item;
 	return;
 }
 
-void FourDimArray::setAmountOfSampleName(int item) {
+void FourDimArray::setAmountOfSampleName(const int item) {
 	amountOfSampleName = item;
 	return;
 }
 
-void FourDimArray::setAmountOfParallel(int item) {
+void FourDimArray::setAmountOfParallel(const int item) {
 	amountOfParallel = item;
 	return;
 }
 
-void FourDimArray::setDescription(string item) {
+void FourDimArray::setDescription(const string item) {
 	description = item;
 	return;
 }
 
-void FourDimArray::setMessageWithNullStatus(int session, int component, int sampleName, int parallel, string message) {
+void FourDimArray::setMessageWithNullStatus(const int session, const int component, const int sampleName, const int parallel, const string message) {
 	(*(*(*(fourdimarray + session) + component) + sampleName) + parallel)->messageWithNullStatus = message;
 	return;
 }
@@ -94,7 +91,7 @@ int FourDimArray::getAmountOfSession() {
 	return amountOfSession;
 }
 
-int FourDimArray::getAmountOfSession(int component, int sampleName) {
+int FourDimArray::getAmountOfSession(const int component, const int sampleName) {
 	int sessionCounter = 0;
 	for (int s = 0; s < getAmountOfSession(); s++) {
 		for (int p = 0; p < getAmountOfParallel(); p++) {
@@ -121,7 +118,7 @@ int FourDimArray::getAmountOfParallel() {
 	return amountOfParallel;
 }
 
-int FourDimArray::getAmountOfParallel(int session, int component, int sampleName) {
+int FourDimArray::getAmountOfParallel(const int session, const int component, const int sampleName) {
 	int parallelCounter = 0;
 	for (int p = 0; p < getAmountOfParallel(); p++) {
 		if ((getFourDimArrayStatus(session, component, sampleName, p) == 0) && (getFourDimArrayExist(session, component, sampleName, p))) {
@@ -131,7 +128,7 @@ int FourDimArray::getAmountOfParallel(int session, int component, int sampleName
 	return parallelCounter;
 }
 
-int FourDimArray::getAmountOfParallel(int session, int component, int sampleName, string withoutSmth) {
+int FourDimArray::getAmountOfParallel(const int session, const int component, const int sampleName, const string withoutSmth) {
 	int parallelCounter = 0;
 	for (int p = 0; p < getAmountOfParallel(); p++) {
 		if (withoutSmth == "withoutStatus") {
@@ -147,11 +144,11 @@ string FourDimArray::getDescription() {
 	return description;
 }
 
-string FourDimArray::getMessageWithNullStatus(int session, int component, int sampleName, int parallel){
+string FourDimArray::getMessageWithNullStatus(const int session, const int component, const int sampleName, const int parallel){
 	return (*(*(*(fourdimarray + session) + component) + sampleName) + parallel)->messageWithNullStatus;
 }
 
-FourDimArray * FourDimArray::extractDataFromTableToFourDimArray(struct sessions * arrayOfSessions) {
+FourDimArray * FourDimArray::extractDataFromTableToFourDimArray(const struct sessions * arrayOfSessions) {
 	//Прежде чем создавать Ptr на объект необходимо определить какие параметры 4-х мерного массива нужно указать при его создании
 	//определение компонентов
 	int tmpAmountOfComponents = 1;
@@ -358,64 +355,64 @@ void FourDimArray::printFourDimArray() {
 	return;
 }
 
-void FourDimArray::setFourDimArrayConcentration(int session, int component, int sampleName, int parallel, float item) {
+void FourDimArray::setFourDimArrayConcentration(const int session, const int component, const int sampleName, const int parallel, const float item) {
 	(*(*(*(fourdimarray + session) + component) + sampleName) + parallel)->concentration = item;
 	return;
 }
 
-void FourDimArray::setFourDimArrayStatus(int session, int component, int sampleName, int parallel, int state) {
+void FourDimArray::setFourDimArrayStatus(const int session, const int component, const int sampleName, const int parallel, const int state) {
 	(*(*(*(fourdimarray + session) + component) + sampleName) + parallel)->status = state;
 	return;
 }
 
-void FourDimArray::setFourDimArrayExist(int session, int component, int sampleName, int parallel, bool state) {
+void FourDimArray::setFourDimArrayExist(const int session, const int component, const int sampleName, const int parallel, const bool state) {
 	(*(*(*(fourdimarray + session) + component) + sampleName) + parallel)->exist = state;
 	return;
 }
 
-float FourDimArray::getFourDimArrayConcentration(int session, int component, int sampleName, int parallel) {
+float FourDimArray::getFourDimArrayConcentration(const int session, const int component, const int sampleName, const int parallel) {
 	return (*(*(*(fourdimarray + session) + component) + sampleName) + parallel)->concentration;
 }
 
-int FourDimArray::getFourDimArrayStatus(int session, int component, int sampleName, int parallel) {
+int FourDimArray::getFourDimArrayStatus(const int session, const int component, const int sampleName, const int parallel) {
 	return (*(*(*(fourdimarray + session) + component) + sampleName) + parallel)->status;
 }
 
-bool FourDimArray::getFourDimArrayExist(int session, int component, int sampleName, int parallel) {
+bool FourDimArray::getFourDimArrayExist(const int session, const int component, const int sampleName, const int parallel) {
 	return (*(*(*(fourdimarray + session) + component) + sampleName) + parallel)->exist;
 }
 
-void FourDimArray::setStrComponent(int componentOrder, string component) {
+void FourDimArray::setStrComponent(const int componentOrder, const string component) {
 	(*(componentArray + componentOrder)) = component;
 	return;
 }
 
-void FourDimArray::setStrSampleName(int sampleNameOrder, string sampleName) {
+void FourDimArray::setStrSampleName(const int sampleNameOrder, const string sampleName) {
 	(*(sampleNameArray + sampleNameOrder)) = sampleName;
 	return;
 }
 
-void FourDimArray::setStrComponent(int componentOrder, int component) {
+void FourDimArray::setStrComponent(const int componentOrder, const int component) {
 	string c = to_string(component);
 	(*(componentArray + componentOrder)) = c;
 	return;
 }
 
-void FourDimArray::setStrSampleName(int sampleNameOrder, int sampleName) {
+void FourDimArray::setStrSampleName(const int sampleNameOrder, const int sampleName) {
 	string sN = to_string(sampleName);
 	(*(sampleNameArray + sampleNameOrder)) = sN;
 	return;
 }
 
-string FourDimArray::getStrComponent(int componentOrder) {
+string FourDimArray::getStrComponent(const int componentOrder) {
 	return (*(componentArray + componentOrder));
 }
 
-string FourDimArray::getStrSampleName(int sampleNameOrder) {
+string FourDimArray::getStrSampleName(const int sampleNameOrder) {
 	return (*(sampleNameArray + sampleNameOrder));
 }
 
-void FourDimArray::pushParallel(int session, int component, int sampleName, float concentration) {
+void FourDimArray::pushParallel(const int session, const int component, const int sampleName, const float concentration) {
 	int parallel = 0;
 	while (getFourDimArrayExist(session, component, sampleName, parallel)) {
 		parallel++;
@@ -467,5 +464,25 @@ void FourDimArray::pasteValuesInCopyFormat(FourDimArray *fourDimArrayPtr, DataTa
 }
 
 FourDimArray::~FourDimArray() {
+
+	/*for (int s = 0; s < getAmountOfSession(); s++) {
+		for (int c = 0; c < getAmountOfComponent(); c++) {
+			for (int sN = 0; sN < getAmountOfSampleName(); sN++) {
+				delete[] (*(*(*(fourdimarray + s) + c) + sN));
+			}
+		}
+	}
+
+	for (int s = 0; s < getAmountOfSession(); s++) {
+		for (int c = 0; c < getAmountOfComponent(); c++) {
+			delete[] (*(*(fourdimarray + s) + c));
+		}
+	}
+
+	for (int s = 0; s < getAmountOfSession(); s++) {
+		delete[] (*(fourdimarray + s));
+	}
+
+	delete[] fourdimarray;*/
 
 }

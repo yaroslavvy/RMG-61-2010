@@ -3,22 +3,16 @@
 
 #include "List.h"
 #include "Matrix.h"
-#include "Matrix.cpp"//при наследовании специализации базового шаблонного класса, файл реализации базового шаблонного класса необходимо включать в хедер производного конкретного класса
+#include "Matrix.cpp"
 
 class DataTable : public Matrix<string> {
 public:
-	DataTable(int columns, int rows);
-	void extractConcentrationsFromKedaStructureToTable(List *startPtr);
+	DataTable(const int columns, const int rows);
 	void extractConcentrationsFromFormattedStructureToTable(List *startPtr);
-
-	void extractConcentrationsFromTableToFormattedStructure(List **startPtr);
-
-	void printDataTable();
-
-	string getComponentArray(int column);
-	void setComponentArray(int column, string item);
-	string getNameArray(int row);
-	void setNameArray(int row, string name);
+	string getComponentArray(const int column);
+	void setComponentArray(const int column, const string item);
+	string getNameArray(const int row);
+	void setNameArray(const int row, const string name);
 	~DataTable();
 protected:
 	string *componentArray;
