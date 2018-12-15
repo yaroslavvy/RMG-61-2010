@@ -96,8 +96,8 @@ int FourDimArray::getAmountOfSessions(const int component, const int sampleName)
 	for (int s = 0; s < getAmountOfSessions(); s++) {
 		for (int p = 0; p < getAmountOfParallels(); p++) {
 			if ((getFourDimArrayStatus(s, component, sampleName, p) == 0) && (getFourDimArrayExist(s, component, sampleName, p))) {
-				p = getAmountOfParallels();
 				sessionsCounter++;
+				break;
 			}
 		}
 	}
